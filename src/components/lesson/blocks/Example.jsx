@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
 import { CheckCircle2, ChevronRight, PencilLine } from 'lucide-react';
 import { Markdown } from '../Markdown';
 import { toBn } from '@/lib/bn';
@@ -22,32 +21,21 @@ export function Example({ title, question, steps = [], answer }) {
         {question && <Markdown>{question}</Markdown>}
 
         <ol className="space-y-3">
-          <AnimatePresence initial={false}>
-            {steps.slice(0, shown).map((s, i) => (
-              <motion.li
-                key={i}
-                initial={{ opacity: 0, y: -6 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex gap-3"
-              >
-                <span className="mt-1 grid size-6 shrink-0 place-items-center rounded-full bg-primary/15 text-xs font-bold text-primary">
-                  {toBn(i + 1)}
-                </span>
-                <Markdown className="min-w-0 flex-1">{s}</Markdown>
-              </motion.li>
-            ))}
-          </AnimatePresence>
+          {steps.slice(0, shown).map((s, i) => (
+            <li key={i} className="anim-step flex gap-3">
+              <span className="mt-1 grid size-6 shrink-0 place-items-center rounded-full bg-primary/15 text-xs font-bold text-primary">
+                {toBn(i + 1)}
+              </span>
+              <Markdown className="min-w-0 flex-1">{s}</Markdown>
+            </li>
+          ))}
         </ol>
 
         {done && answer && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="flex gap-2 rounded-xl border border-success/40 bg-success/10 p-3"
-          >
+          <div className="anim-pop-in flex gap-2 rounded-xl border border-success/40 bg-success/10 p-3">
             <CheckCircle2 className="mt-1 size-5 shrink-0 text-success" />
             <Markdown className="min-w-0 flex-1 font-semibold">{answer}</Markdown>
-          </motion.div>
+          </div>
         )}
 
         {!done && (

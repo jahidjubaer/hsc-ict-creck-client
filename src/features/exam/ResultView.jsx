@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
-import confetti from 'canvas-confetti';
+import { confetti } from '@/lib/confetti';
 import clsx from 'clsx';
 import {
   ArrowLeft,

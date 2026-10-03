@@ -1,5 +1,5 @@
 import toast from 'react-hot-toast';
-import confetti from 'canvas-confetti';
+import { confetti } from '@/lib/confetti';
 import { api } from '@/lib/api';
 import { queryClient } from '@/lib/queryClient';
 import { useAuthStore } from '@/store/auth';
@@ -9,7 +9,7 @@ export function celebrateBadges(badges) {
   badges.forEach((b, i) =>
     setTimeout(() => toast.custom((t) => <BadgeToast badge={b} visible={t.visible} />, { duration: 5000, id: `badge-${b.key}` }), i * 700)
   );
-  confetti({ particleCount: 80, spread: 70, origin: { y: 0.2 }, disableForReducedMotion: true });
+  confetti({ particleCount: 80, spread: 70, origin: { y: 0.2 } });
   queryClient.invalidateQueries({ queryKey: ['badges'] });
 }
 

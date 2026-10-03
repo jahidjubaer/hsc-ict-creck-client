@@ -1,5 +1,4 @@
 import { Link } from 'react-router';
-import { motion } from 'motion/react';
 import {
   ArrowRight,
   Bot,
@@ -41,13 +40,6 @@ const FAQ = [
   { q: 'AI মূল্যায়ন কতটা নির্ভরযোগ্য?', a: 'প্রতিটি প্রশ্নের মডেল উত্তর ও মানবণ্টন ধরে AI মূল্যায়ন করে। এটি অনুশীলনের জন্য সহায়ক — চূড়ান্ত নম্বর নয়।' },
 ];
 
-const fadeUp = {
-  initial: { opacity: 0, y: 24 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, margin: '-60px' },
-  transition: { duration: 0.5 },
-};
-
 export default function LandingPage() {
   return (
     <>
@@ -56,7 +48,7 @@ export default function LandingPage() {
         <div className="bg-grid absolute inset-0 [mask-image:radial-gradient(ellipse_at_top,black,transparent_70%)]" />
         <div className="absolute -top-40 left-1/2 h-96 w-[48rem] -translate-x-1/2 rounded-full bg-primary/20 blur-3xl" />
         <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-4 py-16 md:py-24 lg:grid-cols-2">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+          <div className="anim-fade-up">
             <span className="badge badge-lg gap-2 border-primary/30 bg-primary/10 text-primary">
               <span className="size-2 animate-pulse rounded-full bg-primary" /> HSC ২০২৬-২৭ ব্যাচের জন্য
             </span>
@@ -82,16 +74,11 @@ export default function LandingPage() {
                 </li>
               ))}
             </ul>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.15 }}
-            className="relative"
-          >
+          <div className="anim-pop-in relative">
             <HeroPreview />
-          </motion.div>
+          </div>
         </div>
       </section>
 
@@ -114,19 +101,17 @@ export default function LandingPage() {
 
       {/* Chapters */}
       <section id="chapters" className="mx-auto max-w-7xl scroll-mt-20 px-4 py-20">
-        <motion.div {...fadeUp} className="mx-auto max-w-2xl text-center">
+        <div className="reveal mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-bold sm:text-4xl">পুরো সিলেবাস, অধ্যায় ধরে ধরে</h2>
           <p className="mt-3 text-base-content/70">
             সবচেয়ে গুরুত্বপূর্ণ অধ্যায় ৩, ৪, ৫ ও ৬ — এগুলোতে আছে সবচেয়ে বেশি ইন্টারঅ্যাকটিভ ল্যাব ও অনুশীলন।
           </p>
-        </motion.div>
+        </div>
         <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {CHAPTERS.map((ch, i) => (
-            <motion.article
+          {CHAPTERS.map((ch) => (
+            <article
               key={ch.slug}
-              {...fadeUp}
-              transition={{ duration: 0.4, delay: i * 0.05 }}
-              className="card-soft group relative overflow-hidden p-6 transition hover:-translate-y-1 hover:shadow-xl"
+              className="reveal card-soft group relative overflow-hidden p-6 transition hover:-translate-y-1 hover:shadow-xl"
             >
               <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${ch.color}`} />
               <div className="flex items-start justify-between">
@@ -138,7 +123,7 @@ export default function LandingPage() {
               <p className="mt-4 text-sm font-medium text-base-content/50">অধ্যায় {toBn(ch.number)}</p>
               <h3 className="mt-1 text-lg leading-snug font-bold">{ch.title}</h3>
               <p className="mt-2 text-sm text-base-content/70">{ch.blurb}</p>
-            </motion.article>
+            </article>
           ))}
         </div>
       </section>
@@ -146,18 +131,18 @@ export default function LandingPage() {
       {/* How it works */}
       <section className="bg-base-200/60 py-20">
         <div className="mx-auto max-w-7xl px-4">
-          <motion.h2 {...fadeUp} className="text-center text-3xl font-bold sm:text-4xl">
+          <h2 className="reveal text-center text-3xl font-bold sm:text-4xl">
             কীভাবে শিখবে?
-          </motion.h2>
+          </h2>
           <ol className="mt-12 grid gap-5 md:grid-cols-4">
             {STEPS.map((s) => (
-              <motion.li key={s.n} {...fadeUp} className="card-soft relative p-6">
+              <li key={s.n} className="reveal card-soft relative p-6">
                 <span className="grid size-10 place-items-center rounded-full bg-primary text-lg font-bold text-primary-content">
                   {toBn(s.n)}
                 </span>
                 <h3 className="mt-4 font-bold">{s.title}</h3>
                 <p className="mt-1 text-sm text-base-content/70">{s.text}</p>
-              </motion.li>
+              </li>
             ))}
           </ol>
         </div>
@@ -165,17 +150,17 @@ export default function LandingPage() {
 
       {/* Features */}
       <section id="features" className="mx-auto max-w-7xl scroll-mt-20 px-4 py-20">
-        <motion.div {...fadeUp} className="mx-auto max-w-2xl text-center">
+        <div className="reveal mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-bold sm:text-4xl">যা যা পাচ্ছো</h2>
           <p className="mt-3 text-base-content/70">শুধু পড়া নয় — শেখা, অনুশীলন, মূল্যায়ন আর অনুপ্রেরণা একসাথে।</p>
-        </motion.div>
+        </div>
         <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {FEATURES.map(({ icon: Icon, title, text }) => (
-            <motion.div key={title} {...fadeUp} className="card-soft p-6">
+            <div key={title} className="reveal card-soft p-6">
               <Icon className="size-8 text-primary" />
               <h3 className="mt-4 font-bold">{title}</h3>
               <p className="mt-1 text-sm text-base-content/70">{text}</p>
-            </motion.div>
+            </div>
           ))}
         </div>
       </section>
@@ -248,22 +233,19 @@ function HeroPreview() {
           </div>
         </div>
       </div>
-      <motion.div
-        animate={{ y: [0, -8, 0] }}
-        transition={{ duration: 3, repeat: Infinity }}
-        className="card-soft absolute -top-5 -right-4 flex items-center gap-2 px-3 py-2 shadow-xl"
+      <div
+        className="anim-float card-soft absolute -top-5 -right-4 flex items-center gap-2 px-3 py-2 shadow-xl"
       >
         <Flame className="size-5 text-orange-500" />
         <span className="text-sm font-bold">১২ দিনের স্ট্রিক!</span>
-      </motion.div>
-      <motion.div
-        animate={{ y: [0, 8, 0] }}
-        transition={{ duration: 3.5, repeat: Infinity }}
-        className="card-soft absolute -bottom-5 -left-4 flex items-center gap-2 px-3 py-2 shadow-xl"
+      </div>
+      <div
+        style={{ '--float-y': '8px', animationDuration: '3.5s' }}
+        className="anim-float card-soft absolute -bottom-5 -left-4 flex items-center gap-2 px-3 py-2 shadow-xl"
       >
         <Trophy className="size-5 text-amber-500" />
         <span className="text-sm font-bold">সাপ্তাহিক র‍্যাংক #৩</span>
-      </motion.div>
+      </div>
     </div>
   );
 }

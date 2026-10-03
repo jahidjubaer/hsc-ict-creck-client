@@ -14,6 +14,19 @@ const watchContent = {
   },
 };
 
+// Preload the regular Bangla font file: every page's text needs it, and CSS would otherwise discover it late.
+const preloadBanglaFont = {
+  name: 'preload-bangla-font',
+  apply: 'build',
+  transformIndexHtml: {
+    order: 'post',
+    handler(_html, ctx) {
+      const file = Object.keys(ctx.bundle ?? {}).find((f) => /hind-siliguri-bengali-400-normal-[\w-]+\.woff2$/.test(f));
+      return file ? [{ tag: 'link', attrs: { rel: 'preload', href: `/${file}`, as: 'font', type: 'font/woff2', crossorigin: '' }, injectTo: 'head' }] : [];
+    },
+  },
+};
+
 // Installable app + offline use. The whole app (~1 MB gzipped) is precached so every page and lab opens offline;
 // lessons are cached as they are opened (or with "save chapter offline") and served from cache when the network fails.
 const pwa = VitePWA({
@@ -37,7 +50,8 @@ const pwa = VitePWA({
     ],
   },
   workbox: {
-    globPatterns: ['**/*.{js,css,html,svg,png,ico,wasm}'],
+    // fonts: only the Bangla/Latin text faces up front; code-font and other subsets are cached when first used
+    globPatterns: ['**/*.{js,css,html,svg,png,ico,wasm}', '**/hind-siliguri-{bengali,latin}-*.woff2'],
     globIgnores: ['**/Admin*.js', '**/AiReviewPage*.js', '**/Question{s,Edit}*.js'],
     maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
     navigateFallback: '/index.html',
@@ -57,25 +71,16 @@ const pwa = VitePWA({
         },
       },
       {
-        urlPattern: ({ url }) => url.origin === 'https://fonts.googleapis.com',
-        handler: 'StaleWhileRevalidate',
-        options: { cacheName: 'google-fonts-css' },
-      },
-      {
-        urlPattern: ({ url }) => url.origin === 'https://fonts.gstatic.com',
+        urlPattern: ({ url }) => url.pathname.endsWith('.woff2'),
         handler: 'CacheFirst',
-        options: {
-          cacheName: 'google-fonts',
-          cacheableResponse: { statuses: [0, 200] },
-          expiration: { maxEntries: 30, maxAgeSeconds: 365 * 86400 },
-        },
+        options: { cacheName: 'fonts', expiration: { maxEntries: 30 } },
       },
     ],
   },
 });
 
 export default defineConfig({
-  plugins: [react(), tailwindcss(), watchContent, pwa],
+  plugins: [react(), tailwindcss(), watchContent, preloadBanglaFont, pwa],
   resolve: {
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router';
-import confetti from 'canvas-confetti';
+import { confetti } from '@/lib/confetti';
 import toast from 'react-hot-toast';
 import clsx from 'clsx';
 import {

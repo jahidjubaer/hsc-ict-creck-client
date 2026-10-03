@@ -161,3 +161,53 @@
 
 /* Code must show exactly what students type: no <= / == / != ligatures. */
 code, pre, kbd, samp { font-variant-ligatures: none; }
+
+/* Light CSS animations (landing page, lesson examples) — no animation library on first load. */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(var(--fade-y, 20px));
+  }
+}
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+@keyframes float {
+  50% {
+    transform: translateY(var(--float-y, -8px));
+  }
+}
+.anim-fade-up {
+  animation: fade-up 0.6s ease-out both;
+}
+.anim-pop-in {
+  animation: pop-in 0.6s ease-out 0.15s both;
+}
+.anim-step {
+  --fade-y: -6px;
+  animation: fade-up 0.3s ease-out both;
+}
+.anim-float {
+  animation: float 3s ease-in-out infinite;
+}
+/* Fade in while scrolling into view where supported; elsewhere (and for crawlers) content is simply visible. */
+@supports (animation-timeline: view()) {
+  .reveal {
+    --fade-y: 24px;
+    animation: fade-up linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 70%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .anim-fade-up,
+  .anim-pop-in,
+  .anim-step,
+  .anim-float,
+  .reveal {
+    animation: none;
+  }
+}

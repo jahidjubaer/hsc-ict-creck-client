@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { Link, useLocation } from 'react-router';
-import confetti from 'canvas-confetti';
-import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis } from 'recharts';
+import { confetti } from '@/lib/confetti';
 import { ArrowRight, BookOpen, Bookmark, CalendarDays, Medal, PlayCircle, Target, Trophy } from 'lucide-react';
 import { useAuthStore } from '@/store/auth';
 import { ChapterIcon } from '@/components/ui/ChapterIcon';
@@ -88,6 +87,25 @@ function StatCard({ icon: Icon, label, value, tone, children }) {
         {children}
       </div>
     </div>
+  );
+}
+
+/** Minutes read on each of the last 7 days (plain CSS bars — no chart library on the first screen after login). */
+function WeekBars({ data }) {
+  const max = Math.max(...data.map((d) => d.minutes), 1);
+  return (
+    <ul className="flex h-full items-end gap-2" aria-label="গত ৭ দিনে প্রতিদিন কত মিনিট পড়েছ">
+      {data.map((d) => (
+        <li key={d.day} className="flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-1" title={`${d.label}: ${toBn(d.minutes)} মিনিট`}>
+          <span className="text-xs font-semibold text-base-content/70">{d.minutes ? toBn(d.minutes) : ''}</span>
+          <span
+            className="w-full max-w-10 rounded-t-md bg-primary transition-[height] duration-500"
+            style={{ height: `${(d.minutes / max) * 100}%`, minHeight: d.minutes ? 4 : 2, opacity: d.minutes ? 1 : 0.25 }}
+          />
+          <span className="text-xs text-base-content/60">{d.label}</span>
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -209,20 +227,7 @@ export default function DashboardPage() {
           <div className="card-soft p-5">
             <h2 className="font-bold">গত ৭ দিন (মিনিট)</h2>
             <div className="mt-3 h-40">
-              {chart && (
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={chart}>
-                    <XAxis dataKey="label" tickLine={false} axisLine={false} fontSize={12} />
-                    <Tooltip
-                      cursor={{ fill: 'color-mix(in oklch, var(--color-primary) 10%, transparent)' }}
-                      formatter={(v) => [`${toBn(v)} মিনিট`, 'পড়া']}
-                      labelFormatter={() => ''}
-                      contentStyle={{ borderRadius: 12, border: 'none', background: 'var(--color-base-100)' }}
-                    />
-                    <Bar dataKey="minutes" fill="var(--color-primary)" radius={[6, 6, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              )}
+              {chart && <WeekBars data={chart} />}
             </div>
           </div>
 
