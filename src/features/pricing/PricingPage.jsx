@@ -27,7 +27,7 @@ export default function PricingPage() {
         <Crown className="mx-auto size-10 text-amber-500" />
         <h1 className="mt-3 text-3xl font-bold sm:text-4xl">সহজ ও সাশ্রয়ী প্যাকেজ</h1>
         <p className="mt-2 text-base-content/70">
-          প্রথম ১৫ দিন সম্পূর্ণ ফ্রি। এরপর বিকাশ বা নগদে পেমেন্ট করে তোমার সুবিধামতো প্যাকেজ নাও।
+          প্রথম ১৫ দিন সম্পূর্ণ ফ্রি। এরপর বিকাশ বা নগদে পেমেন্ট করে তোমার সুবিধামতো প্যাকেজ নাও। প্রতিটি অধ্যায়ের প্রথম টপিক সবসময় ফ্রি।
         </p>
       </div>
 

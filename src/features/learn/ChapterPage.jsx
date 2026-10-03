@@ -93,7 +93,7 @@ export default function ChapterPage() {
       {!access && (
         <div className="alert alert-warning alert-soft">
           <Crown className="size-5" />
-          <span>ফ্রি টপিক ছাড়া বাকি সব পড়তে প্রিমিয়াম প্যাকেজ প্রয়োজন।</span>
+          <span>প্রথম টপিকটি ফ্রি — বাকি টপিক পড়তে প্রিমিয়াম প্যাকেজ প্রয়োজন।</span>
           <Link to="/pricing" className="btn btn-sm btn-warning">
             প্যাকেজ দেখো
           </Link>
