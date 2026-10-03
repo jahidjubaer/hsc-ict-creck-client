@@ -5,10 +5,10 @@ import {
   CalendarCheck,
   CheckCircle2,
   Flame,
-  Headphones,
+  CloudDownload,
   ListChecks,
   MousePointerClick,
-  ScrollText,
+  NotebookTabs,
   Trophy,
 } from 'lucide-react';
 import { CHAPTERS } from '@/data/syllabus';
@@ -17,26 +17,26 @@ import { toBn } from '@/lib/bn';
 
 const FEATURES = [
   { icon: MousePointerClick, title: 'ইন্টারঅ্যাকটিভ পাঠ', text: 'লজিক গেট সিমুলেটর, লাইভ HTML এডিটর, SQL প্লেগ্রাউন্ড, সংখ্যা রূপান্তরের ধাপে ধাপে সমাধান।' },
-  { icon: Headphones, title: 'অডিও লেসন', text: 'বাসে, হাঁটতে হাঁটতে — প্রতিটি টপিক শুনে শুনে শেখো।' },
-  { icon: ListChecks, title: 'টপিকভিত্তিক MCQ ও CQ', text: 'প্রতিটি টপিক শেষে ছোট পরীক্ষা, প্রতিটি অপশনের ব্যাখ্যাসহ।' },
+  { icon: CloudDownload, title: 'অফলাইনে পড়ো, অ্যাপের মতো', text: 'মোবাইলে ইনস্টল করো; অধ্যায় সেভ করে ইন্টারনেট ছাড়াই পড়ো।' },
+  { icon: ListChecks, title: 'আলাদা MCQ ও সৃজনশীল পরীক্ষা', text: 'টপিক, অধ্যায় ও পুরো বই — প্রতিটি স্তরে MCQ আর সৃজনশীল আলাদা, প্রতিটি অপশনের ব্যাখ্যাসহ।' },
   { icon: Bot, title: 'AI দিয়ে সৃজনশীল মূল্যায়ন', text: 'তোমার লেখা CQ উত্তর বোর্ডের মানবণ্টন অনুযায়ী মূল্যায়ন ও পরামর্শ।' },
-  { icon: ScrollText, title: 'বিগত বছরের বোর্ড প্রশ্ন', text: 'বোর্ড ও সালভিত্তিক প্রশ্ন, পূর্ণাঙ্গ মডেল টেস্ট — আসল পরীক্ষার মতো টাইমারসহ।' },
+  { icon: NotebookTabs, title: 'ভুলের খাতা ও মডেল টেস্ট', text: 'ভুল করা প্রশ্ন নিজে থেকেই জমা হয়; বোর্ডের প্যাটার্নে টাইমারসহ পূর্ণাঙ্গ মডেল টেস্ট।' },
   { icon: CalendarCheck, title: 'মাসিক স্টাডি প্ল্যান', text: 'পরীক্ষার তারিখ দাও, আমরা দিনভিত্তিক পরিকল্পনা বানিয়ে দেব।' },
   { icon: Flame, title: 'ডেইলি স্ট্রিক ও ব্যাজ', text: 'প্রতিদিন পড়লে স্ট্রিক বাড়বে, ভালো স্কোরে মিলবে ব্যাজ।' },
   { icon: Trophy, title: 'লিডারবোর্ড', text: 'সারা দেশের শিক্ষার্থীদের সাথে সাপ্তাহিক প্রতিযোগিতা।' },
 ];
 
 const STEPS = [
-  { n: 1, title: 'টপিক পড়ো ও শোনো', text: 'সহজ বাংলায় ব্যাখ্যা, চিত্র ও উদাহরণ।' },
-  { n: 2, title: 'টপিক কুইজ', text: 'MCQ + CQ দিয়ে সাথে সাথে যাচাই।' },
+  { n: 1, title: 'পড়ো ও হাতে-কলমে করো', text: 'সহজ বাংলায় ব্যাখ্যা, চিত্র, উদাহরণ ও ইন্টারঅ্যাকটিভ ল্যাব।' },
+  { n: 2, title: 'টপিক কুইজ', text: 'MCQ কুইজে সাথে সাথে উত্তর, সৃজনশীলে AI মূল্যায়ন।' },
   { n: 3, title: 'অধ্যায় পরীক্ষা', text: 'পুরো অধ্যায়ের বোর্ড-মানের পরীক্ষা।' },
-  { n: 4, title: 'ফুল মডেল টেস্ট', text: 'পুরো বইয়ের উপর বোর্ড প্রশ্নের আদলে।' },
+  { n: 4, title: 'ফুল মডেল টেস্ট', text: 'পুরো বইয়ের উপর বোর্ডের প্যাটার্নে MCQ ও সৃজনশীল।' },
 ];
 
 const FAQ = [
   { q: 'ফ্রি ট্রায়ালে কী কী পাব?', a: 'রেজিস্ট্রেশনের পর ১৫ দিন সব ফিচার সম্পূর্ণ ফ্রি — কোনো কার্ড বা পেমেন্ট লাগবে না। ট্রায়াল শেষ হলেও প্রতিটি অধ্যায়ের প্রথম টপিক ও তার কুইজ সবসময় ফ্রি।' },
   { q: 'কনটেন্ট কি NCTB বই অনুযায়ী?', a: 'হ্যাঁ। একাদশ-দ্বাদশ শ্রেণির NCTB ICT বই অনুসরণ করে প্রতিটি অধ্যায় ও টপিক সাজানো, সাথে বোর্ড পরীক্ষার গুরুত্বপূর্ণ বিষয়।' },
-  { q: 'মোবাইলে ব্যবহার করা যাবে?', a: 'অবশ্যই। পুরো ওয়েবসাইট মোবাইলের জন্য অপটিমাইজ করা।' },
+  { q: 'মোবাইলে ব্যবহার করা যাবে?', a: 'অবশ্যই। পুরো ওয়েবসাইট মোবাইলের জন্য বানানো — চাইলে অ্যাপের মতো ইনস্টল করে অধ্যায় সেভ করে অফলাইনেও পড়তে পারবে।' },
   { q: 'AI মূল্যায়ন কতটা নির্ভরযোগ্য?', a: 'প্রতিটি প্রশ্নের মডেল উত্তর ও মানবণ্টন ধরে AI মূল্যায়ন করে। এটি অনুশীলনের জন্য সহায়ক — চূড়ান্ত নম্বর নয়।' },
 ];
 
@@ -56,7 +56,7 @@ export default function LandingPage() {
               HSC ICT শেখো <span className="text-gradient">মজায় মজায়</span>, A+ নিশ্চিত করো
             </h1>
             <p className="mt-5 max-w-xl text-lg text-base-content/70">
-              অধ্যায়ভিত্তিক ইন্টারঅ্যাকটিভ পাঠ, অডিও লেসন, টপিক কুইজ, AI-মূল্যায়িত সৃজনশীল প্রশ্ন, বোর্ড প্রশ্ন ও মডেল টেস্ট —
+              অধ্যায়ভিত্তিক ইন্টারঅ্যাকটিভ পাঠ ও ল্যাব, টপিক কুইজ, AI-মূল্যায়িত সৃজনশীল প্রশ্ন, অধ্যায় পরীক্ষা ও মডেল টেস্ট —
               সব এক জায়গায়, সম্পূর্ণ বাংলায়।
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
@@ -87,9 +87,9 @@ export default function LandingPage() {
         <div className="mx-auto grid max-w-7xl grid-cols-2 gap-6 px-4 py-8 text-center md:grid-cols-4">
           {[
             ['৬টি', 'অধ্যায়'],
-            ['৫০+', 'ইন্টারঅ্যাকটিভ টপিক'],
-            ['১০০০+', 'MCQ ও CQ'],
-            ['১০+', 'বছরের বোর্ড প্রশ্ন'],
+            ['৬১টি', 'টপিকভিত্তিক পাঠ'],
+            ['১৩০০+', 'MCQ ও সৃজনশীল প্রশ্ন'],
+            ['১৯০টি', 'ইন্টারঅ্যাকটিভ ল্যাব'],
           ].map(([v, l]) => (
             <div key={l}>
               <p className="text-gradient text-3xl font-bold">{v}</p>
@@ -201,7 +201,7 @@ function HeroPreview() {
         <div className="flex items-center justify-between">
           <span className="badge badge-primary badge-soft">অধ্যায় ৩ · লজিক গেট</span>
           <span className="flex items-center gap-1 text-sm text-base-content/60">
-            <Headphones className="size-4" /> ৪:২০
+            <MousePointerClick className="size-4" /> ল্যাব
           </span>
         </div>
         <h3 className="mt-3 text-lg font-bold">NAND গেট — সার্বজনীন গেট</h3>
@@ -234,14 +234,14 @@ function HeroPreview() {
         </div>
       </div>
       <div
-        className="anim-float card-soft absolute -top-5 -right-4 flex items-center gap-2 px-3 py-2 shadow-xl"
+        className="anim-float card-soft absolute -top-5 -right-1 flex sm:-right-4 items-center gap-2 px-3 py-2 shadow-xl"
       >
         <Flame className="size-5 text-orange-500" />
         <span className="text-sm font-bold">১২ দিনের স্ট্রিক!</span>
       </div>
       <div
         style={{ '--float-y': '8px', animationDuration: '3.5s' }}
-        className="anim-float card-soft absolute -bottom-5 -left-4 flex items-center gap-2 px-3 py-2 shadow-xl"
+        className="anim-float card-soft absolute -bottom-5 -left-1 flex sm:-left-4 items-center gap-2 px-3 py-2 shadow-xl"
       >
         <Trophy className="size-5 text-amber-500" />
         <span className="text-sm font-bold">সাপ্তাহিক র‍্যাংক #৩</span>

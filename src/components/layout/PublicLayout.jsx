@@ -1,4 +1,6 @@
-import { Link, NavLink, Outlet } from 'react-router';
+import { useEffect } from 'react';
+import { Link, NavLink, Outlet, useLocation } from 'react-router';
+import clsx from 'clsx';
 import { Menu } from 'lucide-react';
 import { Logo } from '@/components/ui/Logo';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
@@ -15,6 +17,19 @@ const NAV = [
 
 export function PublicLayout() {
   const user = useAuthStore((s) => s.user);
+  const { pathname, hash } = useLocation();
+
+  // Scroll to /#section links (the landing page loads lazily, so wait for the section to exist).
+  useEffect(() => {
+    if (!hash) return;
+    let tries = 0;
+    const id = setInterval(() => {
+      const el = document.getElementById(hash.slice(1));
+      if (el || ++tries > 20) clearInterval(id);
+      el?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+    return () => clearInterval(id);
+  }, [pathname, hash]);
 
   return (
     <div className="flex min-h-dvh flex-col bg-base-100">
@@ -24,7 +39,11 @@ export function PublicLayout() {
           <ul className="hidden items-center gap-1 md:flex">
             {NAV.map((n) => (
               <li key={n.to}>
-                <NavLink to={n.to} className="btn btn-ghost btn-sm font-medium">
+                {/* Section links (/#…) are never "active"; only real pages get the active colour. */}
+                <NavLink
+                  to={n.to}
+                  className={({ isActive }) => clsx('btn btn-ghost btn-sm font-medium', isActive && !n.to.includes('#') && 'text-primary')}
+                >
                   {n.label}
                 </NavLink>
               </li>
