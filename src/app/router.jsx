@@ -37,6 +37,7 @@ export const router = createBrowserRouter([
           { path: 'learn/:chapterSlug/:topicSlug', lazy: page(() => import('@/features/learn/TopicPage')) },
           { path: 'exams', lazy: page(() => import('@/features/exam/ExamsPage')) },
           { path: 'practice/:topicId/:part', lazy: page(() => import('@/features/exam/GuestQuizPage')) },
+          { path: '*', lazy: page(() => import('@/components/layout/NotFound')) },
           {
             element: <LoginGate />,
             children: [
@@ -68,7 +69,6 @@ export const router = createBrowserRouter([
                   },
                 ],
               },
-              { path: '*', lazy: page(() => import('@/components/layout/ComingSoon')) },
             ],
           },
         ],
@@ -79,7 +79,6 @@ export const router = createBrowserRouter([
             { path: 'dev/lesson/:chapter/:slug', lazy: page(() => import('@/features/dev/LessonPreview')) },
           ]
         : []),
-      { path: '*', lazy: page(() => import('@/components/layout/NotFound')) },
     ],
   },
 ]);

@@ -17,7 +17,7 @@ export default function AdminLayout() {
   const { data: stats } = useAdminStats();
   return (
     <div className="space-y-5">
-      <nav className="-mx-3 overflow-x-auto px-3 sm:mx-0 sm:px-0" aria-label="অ্যাডমিন">
+      <nav className="-mx-3 overflow-x-auto px-3 [scrollbar-width:none] sm:mx-0 sm:px-0 [&::-webkit-scrollbar]:hidden" aria-label="অ্যাডমিন">
         <ul className="flex min-w-max gap-1 rounded-box bg-base-200 p-1">
           {TABS.map(({ to, label, icon: Icon, end, badge }) => (
             <li key={to}>
