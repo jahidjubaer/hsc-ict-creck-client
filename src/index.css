@@ -1,0 +1,163 @@
+@import 'tailwindcss';
+
+@plugin '@tailwindcss/typography';
+
+@plugin 'daisyui' {
+  themes: false;
+}
+
+@plugin 'daisyui/theme' {
+  name: 'ictlight';
+  default: true;
+  color-scheme: light;
+  --color-base-100: oklch(99% 0.004 260);
+  --color-base-200: oklch(96.5% 0.008 260);
+  --color-base-300: oklch(92% 0.014 260);
+  --color-base-content: oklch(25% 0.03 265);
+  --color-primary: oklch(55% 0.22 275);
+  --color-primary-content: oklch(98% 0.01 275);
+  --color-secondary: oklch(70% 0.14 210);
+  --color-secondary-content: oklch(20% 0.04 210);
+  --color-accent: oklch(80% 0.16 85);
+  --color-accent-content: oklch(25% 0.05 85);
+  --color-neutral: oklch(28% 0.03 265);
+  --color-neutral-content: oklch(96% 0.01 265);
+  --color-info: oklch(68% 0.15 235);
+  --color-info-content: oklch(98% 0.01 235);
+  --color-success: oklch(68% 0.16 155);
+  --color-success-content: oklch(98% 0.01 155);
+  --color-warning: oklch(80% 0.16 75);
+  --color-warning-content: oklch(25% 0.05 75);
+  --color-error: oklch(63% 0.22 25);
+  --color-error-content: oklch(98% 0.01 25);
+  --radius-selector: 0.75rem;
+  --radius-field: 0.75rem;
+  --radius-box: 1.25rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}
+
+@plugin 'daisyui/theme' {
+  name: 'ictdark';
+  prefersdark: true;
+  color-scheme: dark;
+  --color-base-100: oklch(21% 0.025 265);
+  --color-base-200: oklch(18% 0.025 265);
+  --color-base-300: oklch(27% 0.03 265);
+  --color-base-content: oklch(93% 0.01 265);
+  --color-primary: oklch(68% 0.18 275);
+  --color-primary-content: oklch(15% 0.03 275);
+  --color-secondary: oklch(75% 0.13 210);
+  --color-secondary-content: oklch(18% 0.04 210);
+  --color-accent: oklch(83% 0.15 85);
+  --color-accent-content: oklch(22% 0.05 85);
+  --color-neutral: oklch(32% 0.03 265);
+  --color-neutral-content: oklch(94% 0.01 265);
+  --color-info: oklch(72% 0.13 235);
+  --color-info-content: oklch(15% 0.03 235);
+  --color-success: oklch(72% 0.15 155);
+  --color-success-content: oklch(15% 0.03 155);
+  --color-warning: oklch(82% 0.15 75);
+  --color-warning-content: oklch(20% 0.05 75);
+  --color-error: oklch(68% 0.2 25);
+  --color-error-content: oklch(15% 0.03 25);
+  --radius-selector: 0.75rem;
+  --radius-field: 0.75rem;
+  --radius-box: 1.25rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}
+
+@theme {
+  --font-sans: 'Hind Siliguri', 'Noto Sans Bengali', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-base-200 text-base-content antialiased;
+    line-height: 1.7;
+  }
+}
+
+@layer components {
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent;
+  }
+  .card-soft {
+    @apply rounded-box border border-base-300 bg-base-100 shadow-sm;
+  }
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, color-mix(in oklch, var(--color-base-content) 6%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in oklch, var(--color-base-content) 6%, transparent) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+}
+
+/* Lesson typography mapped to the DaisyUI theme */
+.prose-ict {
+  --tw-prose-body: color-mix(in oklch, var(--color-base-content) 88%, transparent);
+  --tw-prose-headings: var(--color-base-content);
+  --tw-prose-bold: var(--color-base-content);
+  --tw-prose-links: var(--color-primary);
+  --tw-prose-bullets: var(--color-primary);
+  --tw-prose-counters: var(--color-primary);
+  --tw-prose-quotes: var(--color-base-content);
+  --tw-prose-quote-borders: var(--color-primary);
+  --tw-prose-code: var(--color-secondary-content);
+  --tw-prose-th-borders: var(--color-base-300);
+  --tw-prose-td-borders: var(--color-base-300);
+  --tw-prose-hr: var(--color-base-300);
+  font-size: 1.075rem;
+  line-height: 1.85;
+  max-width: none;
+}
+.prose-ict :where(code):not(:where(pre code)) {
+  @apply rounded-md bg-secondary/15 px-1.5 py-0.5 font-mono text-[0.9em] font-medium;
+}
+.prose-ict :where(code):not(:where(pre code))::before,
+.prose-ict :where(code):not(:where(pre code))::after {
+  content: none;
+}
+.prose-ict table {
+  @apply my-4 overflow-hidden rounded-xl border border-base-300 text-[0.95rem];
+  display: block;
+  overflow-x: auto;
+}
+.prose-ict thead {
+  @apply bg-base-200;
+}
+.prose-ict th,
+.prose-ict td {
+  @apply px-3 py-2;
+}
+.prose-ict > :first-child {
+  margin-top: 0;
+}
+.prose-ict > :last-child {
+  margin-bottom: 0;
+}
+
+/* Block highlighted while the audio narrator reads it */
+.block-speaking {
+  @apply rounded-xl ring-2 ring-primary/40 ring-offset-4 ring-offset-base-100 transition;
+}
+
+/* Student highlights (CSS Custom Highlight API, see components/lesson/Highlighter.jsx) */
+::highlight(hl-yellow) { background-color: rgb(253 224 71 / 0.55); }
+::highlight(hl-green) { background-color: rgb(134 239 172 / 0.55); }
+::highlight(hl-blue) { background-color: rgb(125 211 252 / 0.55); }
+::highlight(hl-pink) { background-color: rgb(249 168 212 / 0.6); }
+
+/* Code must show exactly what students type: no <= / == / != ligatures. */
+code, pre, kbd, samp { font-variant-ligatures: none; }
