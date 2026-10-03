@@ -30,10 +30,15 @@ import { useReadingTracker } from './useReadingTracker';
 import { KeyTerms } from './KeyTerms';
 import { NotesDialog } from './NotesDialog';
 import { useStartAttempt } from '@/features/exam/queries';
+import { useAuthStore } from '@/store/auth';
+import { LoginPrompt } from '@/components/ui/LoginPrompt';
 
 function Gate({ error }) {
   const code = error?.response?.data?.error?.code;
   if (code === 'PAYMENT_REQUIRED') return <Paywall title="প্রিমিয়াম টপিক" message={error.response.data.error.message} />;
+  if (code === 'LOGIN_REQUIRED') {
+    return <LoginPrompt title="এই টপিক পড়তে লগইন করো" message="প্রতিটি অধ্যায়ের প্রথম টপিক লগইন ছাড়াই পড়া যায়। বাকি সব টপিক খুলতে ফ্রি অ্যাকাউন্ট খোলো।" />;
+  }
   if (code === 'COMING_SOON') {
     return (
       <div className="card-soft mx-auto max-w-lg p-8 text-center">
@@ -56,7 +61,9 @@ export default function TopicPage() {
   const [notesOpen, setNotesOpen] = useState(false);
 
   const topic = data?.topic;
-  const readPct = useReadingTracker(topic?._id, articleRef);
+  // Visitors (free topics only): no progress, bookmarks, notes or highlights — those belong to an account.
+  const guest = !useAuthStore((s) => s.user);
+  const readPct = useReadingTracker(guest ? undefined : topic?._id, articleRef);
   const chunks = useMemo(() => (topic ? buildNarration(topic.blocks, topic.title) : []), [topic]);
   const speech = useSpeech(chunks);
   const complete = useCompleteTopic();
@@ -165,7 +172,7 @@ export default function TopicPage() {
                   <CheckCircle2 className="size-3.5" /> সম্পন্ন
                 </span>
               )}
-              <div className="ml-auto flex gap-1">
+              <div className={clsx('ml-auto flex gap-1', guest && 'hidden')}>
                 <button type="button" onClick={toggleBookmark} className="btn btn-ghost btn-sm btn-square" aria-label="বুকমার্ক">
                   <Bookmark className={clsx('size-5', bookmarked && 'fill-primary text-primary')} />
                 </button>
@@ -181,19 +188,40 @@ export default function TopicPage() {
             <AudioBar speech={speech} audioUrl={topic.audioUrl} minutes={Math.ceil(chunks.length / 6)} />
           </div>
 
-          {highlightSupported && highlights.length === 0 && (
+          {!guest && highlightSupported && highlights.length === 0 && (
             <p className="-mt-4 mb-6 text-xs text-base-content/50">টিপ: যেকোনো লেখা সিলেক্ট করে রঙ বেছে নিলে হাইলাইট হবে — পরে আবার এসে দেখতে পাবে।</p>
           )}
           <div ref={blocksRef}>
             <BlockRenderer blocks={topic.blocks} activeIndex={speech.activeBlock} />
           </div>
-          <Highlighter containerRef={blocksRef} highlights={highlights} onChange={saveHighlights} />
+          {!guest && <Highlighter containerRef={blocksRef} highlights={highlights} onChange={saveHighlights} />}
 
           {topic.keyTerms?.length > 0 && <KeyTerms terms={topic.keyTerms} />}
 
           {/* Completion */}
           <section className="mt-12 rounded-box border border-base-300 bg-base-100 p-6 text-center">
-            {completed ? (
+            {guest ? (
+              <>
+                <PartyPopper className="mx-auto size-10 text-primary" />
+                <h2 className="mt-3 text-xl font-bold">এবার নিজেকে যাচাই করো — লগইন ছাড়াই</h2>
+                <p className="mt-1 text-sm text-base-content/60">এই ফ্রি টপিকের MCQ কুইজ ও সৃজনশীল প্রশ্ন দাও। লগইন করলে ফল, XP ও স্ট্রিক সেভ হবে।</p>
+                <div className="mx-auto mt-5 grid max-w-md gap-3 sm:grid-cols-2">
+                  {[
+                    { part: 'mcq', count: tests.mcq.count, icon: ListChecks, label: 'MCQ কুইজ', hint: '১০টি প্রশ্ন · ব্যাখ্যাসহ', cls: 'btn-primary' },
+                    { part: 'cq', count: tests.cq.count, icon: PenLine, label: 'সৃজনশীল প্রশ্ন', hint: 'লিখে মডেল উত্তরের সাথে মেলাও', cls: 'btn-secondary' },
+                  ]
+                    .filter((x) => x.count > 0)
+                    .map(({ part, icon: Icon, label, hint, cls }) => (
+                      <div key={part} className="rounded-2xl border border-base-300 p-3">
+                        <Link to={`/practice/${topic._id}/${part}`} className={`btn ${cls} btn-block`}>
+                          <Icon className="size-4" /> {label}
+                        </Link>
+                        <p className="mt-2 text-xs text-base-content/60">{hint}</p>
+                      </div>
+                    ))}
+                </div>
+              </>
+            ) : completed ? (
               <>
                 <PartyPopper className="mx-auto size-10 text-primary" />
                 <h2 className="mt-3 text-xl font-bold">টপিক সম্পন্ন! এবার নিজেকে যাচাই করো</h2>

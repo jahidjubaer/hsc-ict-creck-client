@@ -21,6 +21,7 @@ import { toBn } from '@/lib/bn';
 import { useChapter } from './queries';
 import { useStartAttempt } from '@/features/exam/queries';
 import { OfflineSave } from './OfflineSave';
+import { useAuthStore } from '@/store/auth';
 
 function TopicStatusIcon({ topic }) {
   if (!topic.published) return <Hourglass className="size-5 text-base-content/30" />;
@@ -34,6 +35,7 @@ export default function ChapterPage() {
   const { chapterSlug } = useParams();
   const { data, isLoading, error, refetch } = useChapter(chapterSlug);
   const startTest = useStartAttempt();
+  const guest = !useAuthStore((s) => s.user);
 
   if (isLoading) {
     return (
@@ -90,14 +92,24 @@ export default function ChapterPage() {
         </div>
       </header>
 
-      {!access && (
+      {guest ? (
+        <div className="alert alert-info alert-soft">
+          <Crown className="size-5" />
+          <span>প্রথম টপিক লগইন ছাড়াই ফ্রি। ফ্রি অ্যাকাউন্ট খুললে ১৫ দিন এই অধ্যায়ের সব টপিক ও পরীক্ষা খোলা।</span>
+          <Link to="/register" state={{ from: `/learn/${chapterSlug}` }} className="btn btn-sm btn-primary">
+            ফ্রি অ্যাকাউন্ট খোলো
+          </Link>
+        </div>
+      ) : (
+        !access && (
         <div className="alert alert-warning alert-soft">
           <Crown className="size-5" />
           <span>প্রথম টপিকটি ফ্রি — বাকি টপিক পড়তে প্রিমিয়াম প্যাকেজ প্রয়োজন।</span>
-          <Link to="/pricing" className="btn btn-sm btn-warning">
+          <Link to="/subscribe" className="btn btn-sm btn-warning">
             প্যাকেজ দেখো
           </Link>
         </div>
+        )
       )}
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -133,8 +145,12 @@ export default function ChapterPage() {
               );
               return (
                 <li key={t._id}>
-                  {t.locked ? (
+                  {!t.published ? (
                     <div className="flex items-center gap-3 p-4 opacity-80">{content}</div>
+                  ) : t.locked ? (
+                    <Link to={t.slug} className="flex items-center gap-3 p-4 opacity-80 transition hover:bg-base-200/60 hover:opacity-100">
+                      {content}
+                    </Link>
                   ) : (
                     <Link to={t.slug} className="flex items-center gap-3 p-4 transition hover:bg-base-200/60">
                       {content}
@@ -166,7 +182,11 @@ export default function ChapterPage() {
             <p className="mt-2 text-sm text-base-content/70">
               সব টপিক শেষ হলে বোর্ডের আদলে আলাদা দুটি পরীক্ষা: MCQ (২৫টি, ২৫ মিনিট) ও সৃজনশীল (৩টি থেকে ২টি, ৫০ মিনিট)।
             </p>
-            {published.length > 0 && done >= published.length ? (
+            {guest ? (
+              <Link to="/login" state={{ from: `/learn/${chapterSlug}` }} className="btn btn-outline btn-sm mt-3 w-full">
+                <Lock className="size-4" /> লগইন করে পরীক্ষা দাও
+              </Link>
+            ) : published.length > 0 && done >= published.length ? (
               <div className="mt-3 grid grid-cols-2 gap-2">
                 <button
                   type="button"
@@ -191,7 +211,7 @@ export default function ChapterPage() {
               </button>
             )}
           </div>
-          <OfflineSave chapterSlug={chapterSlug} topics={topics} />
+          {!guest && <OfflineSave chapterSlug={chapterSlug} topics={topics} />}
         </aside>
       </div>
     </div>

@@ -63,9 +63,9 @@ export default function LandingPage() {
               <Link to="/register" className="btn btn-primary btn-lg gap-2 shadow-lg shadow-primary/30">
                 ১৫ দিন ফ্রি শুরু করো <ArrowRight className="size-5" />
               </Link>
-              <a href="#chapters" className="btn btn-ghost btn-lg">
-                সিলেবাস দেখো
-              </a>
+              <Link to="/learn" className="btn btn-ghost btn-lg">
+                লগইন ছাড়াই ফ্রি পাঠ পড়ো
+              </Link>
             </div>
             <ul className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-base-content/70">
               {['কার্ড লাগবে না', 'NCTB সিলেবাস', 'মোবাইল ফ্রেন্ডলি'].map((t) => (
@@ -109,9 +109,10 @@ export default function LandingPage() {
         </div>
         <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {CHAPTERS.map((ch) => (
-            <article
+            <Link
+              to={`/learn/${ch.slug}`}
               key={ch.slug}
-              className="reveal card-soft group relative overflow-hidden p-6 transition hover:-translate-y-1 hover:shadow-xl"
+              className="reveal card-soft group relative block overflow-hidden p-6 transition hover:-translate-y-1 hover:shadow-xl"
             >
               <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${ch.color}`} />
               <div className="flex items-start justify-between">
@@ -123,7 +124,8 @@ export default function LandingPage() {
               <p className="mt-4 text-sm font-medium text-base-content/50">অধ্যায় {toBn(ch.number)}</p>
               <h3 className="mt-1 text-lg leading-snug font-bold">{ch.title}</h3>
               <p className="mt-2 text-sm text-base-content/70">{ch.blurb}</p>
-            </article>
+              <p className="mt-3 text-sm font-semibold text-primary">প্রথম টপিক ফ্রি — পড়ে দেখো →</p>
+            </Link>
           ))}
         </div>
       </section>

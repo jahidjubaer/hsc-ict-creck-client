@@ -11,15 +11,18 @@ export function useAuthActions() {
   const clear = useAuthStore((s) => s.clear);
 
   return {
+    // Pages loaded as a visitor (locked topics, guest tests) are refetched as the signed-in student.
     async login(values, redirectTo = '/dashboard') {
       const { data } = await api.post('/auth/login', values);
       setSession(data);
+      queryClient.invalidateQueries();
       navigate(redirectTo, { replace: true });
     },
-    async register(values) {
+    async register(values, redirectTo = '/dashboard') {
       const { data } = await api.post('/auth/register', values);
       setSession(data);
-      navigate('/dashboard', { replace: true, state: { welcome: true } });
+      queryClient.invalidateQueries();
+      navigate(redirectTo, { replace: true, state: { welcome: true } });
     },
     async logout() {
       await api.post('/auth/logout').catch(() => {});

@@ -57,7 +57,7 @@ export default function LoginPage() {
         </button>
         <p className="text-center text-sm text-base-content/70">
           অ্যাকাউন্ট নেই?{' '}
-          <Link to="/register" className="link link-primary font-semibold">
+          <Link to="/register" state={location.state} className="link link-primary font-semibold">
             ফ্রি রেজিস্ট্রেশন করো
           </Link>
         </p>

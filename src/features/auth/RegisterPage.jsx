@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useLocation } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -22,6 +22,7 @@ const schema = z.object({
 
 export default function RegisterPage() {
   const { register: signUp } = useAuthActions();
+  const location = useLocation();
   const [serverError, setServerError] = useState('');
   const {
     register,
@@ -32,7 +33,7 @@ export default function RegisterPage() {
   const onSubmit = async (values) => {
     setServerError('');
     try {
-      await signUp(values);
+      await signUp(values, location.state?.from || '/dashboard');
     } catch (err) {
       setServerError(errorMessage(err));
     }
@@ -78,7 +79,7 @@ export default function RegisterPage() {
         </button>
         <p className="text-center text-sm text-base-content/70">
           আগেই অ্যাকাউন্ট আছে?{' '}
-          <Link to="/login" className="link link-primary font-semibold">
+          <Link to="/login" state={location.state} className="link link-primary font-semibold">
             লগইন করো
           </Link>
         </p>

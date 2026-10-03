@@ -108,3 +108,21 @@ export function useRetryMistake() {
     onSuccess: () => qc.invalidateQueries({ queryKey: examKeys.overview }),
   });
 }
+
+// ---- Visitors (no account): free-topic tests, nothing saved ----
+
+export const useFreeTopics = (enabled = true) =>
+  useQuery({ queryKey: ['guest-free-topics'], queryFn: async () => (await api.get('/guest/free-topics')).data.topics, enabled, staleTime: 10 * 60_000 });
+
+/** Starts a visitor test once per page visit (questions + signed token). */
+export const useGuestQuiz = (topicId, part) =>
+  useQuery({
+    queryKey: ['guest-quiz', topicId, part],
+    queryFn: async () => (await api.post('/guest/quiz', { topicId, part })).data,
+    staleTime: Infinity,
+    gcTime: 0,
+    refetchOnWindowFocus: false,
+    retry: false,
+  });
+
+export const useGuestCheck = () => useMutation({ mutationFn: async (body) => (await api.post('/guest/quiz/check', body)).data });

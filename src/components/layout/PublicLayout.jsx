@@ -1,15 +1,16 @@
 import { useEffect } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router';
 import clsx from 'clsx';
-import { Menu } from 'lucide-react';
 import { Logo } from '@/components/ui/Logo';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { useAuthStore } from '@/store/auth';
+import { BottomNav } from './BottomNav';
 
 const YEAR = new Date().getFullYear();
 
 const NAV = [
-  { to: '/#chapters', label: 'অধ্যায়সমূহ' },
+  { to: '/learn', label: 'পড়াশোনা' },
+  { to: '/exams', label: 'পরীক্ষা' },
   { to: '/#features', label: 'ফিচার' },
   { to: '/pricing', label: 'প্যাকেজ' },
   { to: '/#faq', label: 'প্রশ্নোত্তর' },
@@ -32,7 +33,7 @@ export function PublicLayout() {
   }, [pathname, hash]);
 
   return (
-    <div className="flex min-h-dvh flex-col bg-base-100">
+    <div className="flex min-h-dvh flex-col bg-base-100 pb-[calc(4rem+env(safe-area-inset-bottom))] lg:pb-0">
       <header className="sticky top-0 z-40 border-b border-base-300/60 bg-base-100/80 backdrop-blur-lg">
         <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
           <Logo />
@@ -65,23 +66,6 @@ export function PublicLayout() {
                 </Link>
               </>
             )}
-            <div className="dropdown dropdown-end md:hidden">
-              <button tabIndex={0} className="btn btn-ghost btn-circle" aria-label="মেনু">
-                <Menu className="size-5" />
-              </button>
-              <ul tabIndex={0} className="menu dropdown-content z-50 mt-2 w-52 rounded-box bg-base-100 p-2 shadow-lg">
-                {NAV.map((n) => (
-                  <li key={n.to}>
-                    <Link to={n.to}>{n.label}</Link>
-                  </li>
-                ))}
-                {!user && (
-                  <li>
-                    <Link to="/login">লগইন</Link>
-                  </li>
-                )}
-              </ul>
-            </div>
           </div>
         </nav>
       </header>
@@ -97,6 +81,7 @@ export function PublicLayout() {
           <p className="text-base-content/60">© {YEAR} ICT Crack</p>
         </div>
       </footer>
+      <BottomNav />
     </div>
   );
 }

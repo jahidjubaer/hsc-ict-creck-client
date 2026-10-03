@@ -1,7 +1,7 @@
 import { createBrowserRouter } from 'react-router';
 import { PublicLayout } from '@/components/layout/PublicLayout';
 import { AppLayout } from '@/components/layout/AppLayout';
-import { GuestOnly, RequireAdmin, RequireAuth } from '@/features/auth/guards';
+import { GuestOnly, LoginGate, RequireAdmin } from '@/features/auth/guards';
 import { RouteError } from '@/components/layout/RouteError';
 import { PageLoader } from '@/components/ui/PageLoader';
 
@@ -28,16 +28,19 @@ export const router = createBrowserRouter([
         ],
       },
       {
-        element: <RequireAuth />,
+        // One app shell for everyone. Visitors can browse all chapters, read each chapter's free topic and take its
+        // MCQ / CQ test; everything personal sits behind LoginGate (a login prompt inside the shell).
+        element: <AppLayout />,
         children: [
+          { path: 'learn', lazy: page(() => import('@/features/learn/ChaptersPage')) },
+          { path: 'learn/:chapterSlug', lazy: page(() => import('@/features/learn/ChapterPage')) },
+          { path: 'learn/:chapterSlug/:topicSlug', lazy: page(() => import('@/features/learn/TopicPage')) },
+          { path: 'exams', lazy: page(() => import('@/features/exam/ExamsPage')) },
+          { path: 'practice/:topicId/:part', lazy: page(() => import('@/features/exam/GuestQuizPage')) },
           {
-            element: <AppLayout />,
+            element: <LoginGate />,
             children: [
               { path: 'dashboard', lazy: page(() => import('@/features/dashboard/DashboardPage')) },
-              { path: 'learn', lazy: page(() => import('@/features/learn/ChaptersPage')) },
-              { path: 'learn/:chapterSlug', lazy: page(() => import('@/features/learn/ChapterPage')) },
-              { path: 'learn/:chapterSlug/:topicSlug', lazy: page(() => import('@/features/learn/TopicPage')) },
-              { path: 'exams', lazy: page(() => import('@/features/exam/ExamsPage')) },
               { path: 'exams/mistakes', lazy: page(() => import('@/features/exam/MistakesPage')) },
               { path: 'exams/attempts/:id', lazy: page(() => import('@/features/exam/AttemptPage')) },
               { path: 'plan', lazy: page(() => import('@/features/plan/PlanPage')) },

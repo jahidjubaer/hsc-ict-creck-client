@@ -21,6 +21,8 @@ import { bnDate, toBn } from '@/lib/bn';
 import { useExamOverview, useStartAttempt } from './queries';
 import { letterGrade } from './format';
 import { KIND_LABEL } from './kinds';
+import { GuestExams } from './GuestExams';
+import { useAuthStore } from '@/store/auth';
 
 /** 25 → "২৫ মিনিট", 150 → "২ ঘণ্টা ৩০ মিনিট" */
 const duration = (min) => {
@@ -40,8 +42,11 @@ function ScorePill({ percent }) {
 }
 
 export default function ExamsPage() {
-  const { data, isLoading, error, refetch } = useExamOverview();
+  const signedIn = useAuthStore((s) => Boolean(s.user));
+  const { data, isLoading, error, refetch } = useExamOverview(signedIn);
   const start = useStartAttempt();
+
+  if (!signedIn) return <GuestExams />;
 
   if (isLoading) {
     return (

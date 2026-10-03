@@ -1,4 +1,4 @@
-import { Link } from 'react-router';
+import { Link, useLocation } from 'react-router';
 import { Crown, Hourglass, Sparkles } from 'lucide-react';
 import { useAuthStore } from '@/store/auth';
 import { daysLeft, toBn } from '@/lib/bn';
@@ -8,10 +8,22 @@ const RENEW_WARN_DAYS = 5;
 
 /** Trial countdown / pending payment / expiry notice shown at the top of the app shell. */
 export function AccessBanner() {
+  const signedIn = useAuthStore((s) => Boolean(s.user));
   const access = useAuthStore((s) => s.user?.access);
+  const { pathname } = useLocation();
   const isStudent = access && access.kind !== 'admin';
   // Also keeps polling while a payment is pending, so approval unlocks the app without a reload.
   const { data: payments } = usePaymentWatcher({ enabled: Boolean(isStudent) });
+  if (!signedIn) {
+    return (
+      <div className="bg-primary/10 px-4 py-2 text-center text-sm">
+        <Sparkles className="inline size-4 text-primary" /> প্রতিটি অধ্যায়ের প্রথম টপিক ও তার পরীক্ষা লগইন ছাড়াই ফ্রি।{' '}
+        <Link to="/register" state={{ from: pathname }} className="link font-semibold text-primary">
+          অ্যাকাউন্ট খুললে ১৫ দিন সব ফ্রি
+        </Link>
+      </div>
+    );
+  }
   if (!isStudent) return null;
 
   const pending = payments?.some((p) => p.status === 'pending');
