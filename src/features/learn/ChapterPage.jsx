@@ -22,6 +22,7 @@ import { useChapter } from './queries';
 import { useStartAttempt } from '@/features/exam/queries';
 import { OfflineSave } from './OfflineSave';
 import { useAuthStore } from '@/store/auth';
+import { useSeo } from '@/lib/seo';
 
 function TopicStatusIcon({ topic }) {
   if (!topic.published) return <Hourglass className="size-5 text-base-content/30" />;
@@ -36,6 +37,7 @@ export default function ChapterPage() {
   const { data, isLoading, error, refetch } = useChapter(chapterSlug);
   const startTest = useStartAttempt();
   const guest = !useAuthStore((s) => s.user);
+  useSeo({ title: data?.chapter && `অধ্যায় ${toBn(data.chapter.number)}: ${data.chapter.title} — HSC ICT`, description: data?.chapter?.blurb });
 
   if (isLoading) {
     return (

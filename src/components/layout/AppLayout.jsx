@@ -25,6 +25,7 @@ import { useAuthActions } from '@/features/auth/useAuthActions';
 import { AccessBanner } from './AccessBanner';
 import { InstallButton } from '@/components/pwa/InstallButton';
 import { BottomNav } from './BottomNav';
+import { SeoDefaults } from '@/lib/seo';
 import { ContentGuard } from '@/components/security/ContentGuard';
 import { toBn } from '@/lib/bn';
 
@@ -61,6 +62,7 @@ export function AppLayout() {
   return (
     <>
       <ContentGuard />
+      <SeoDefaults />
       <div className="drawer lg:drawer-open">
         <input id={DRAWER_ID} type="checkbox" className="drawer-toggle" />
 

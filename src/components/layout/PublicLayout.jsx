@@ -5,6 +5,7 @@ import { Logo } from '@/components/ui/Logo';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { useAuthStore } from '@/store/auth';
 import { BottomNav } from './BottomNav';
+import { SeoDefaults } from '@/lib/seo';
 
 const YEAR = new Date().getFullYear();
 
@@ -34,6 +35,7 @@ export function PublicLayout() {
 
   return (
     <div className="flex min-h-dvh flex-col bg-base-100 pb-[calc(4rem+env(safe-area-inset-bottom))] lg:pb-0">
+      <SeoDefaults />
       <header className="sticky top-0 z-40 border-b border-base-300/60 bg-base-100/80 backdrop-blur-lg">
         <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
           <Logo />

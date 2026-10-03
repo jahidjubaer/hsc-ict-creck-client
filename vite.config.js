@@ -52,10 +52,10 @@ const pwa = VitePWA({
   workbox: {
     // fonts: only the Bangla/Latin text faces up front; code-font and other subsets are cached when first used
     globPatterns: ['**/*.{js,css,html,svg,png,ico,wasm}', '**/hind-siliguri-{bengali,latin}-*.woff2'],
-    globIgnores: ['**/Admin*.js', '**/AiReviewPage*.js', '**/Question{s,Edit}*.js'],
+    globIgnores: ['**/Admin*.js', '**/AiReviewPage*.js', '**/Question{s,Edit}*.js', 'og-image.png'],
     maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
     navigateFallback: '/index.html',
-    navigateFallbackDenylist: [/^\/api\//],
+    navigateFallbackDenylist: [/^\/api\//, /^\/(robots\.txt|sitemap\.xml)$/],
     cleanupOutdatedCaches: true,
     runtimeCaching: [
       {

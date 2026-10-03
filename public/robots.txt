@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /plan
+Disallow: /profile
+Disallow: /subscribe
+Disallow: /leaderboard
+Disallow: /badges
+Disallow: /practice/
+Disallow: /exams/attempts/
+Disallow: /exams/mistakes
+Disallow: /api/
+
+Sitemap: https://hsc-ict-creck-client.vercel.app/sitemap.xml

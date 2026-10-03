@@ -32,6 +32,7 @@ import { NotesDialog } from './NotesDialog';
 import { useStartAttempt } from '@/features/exam/queries';
 import { useAuthStore } from '@/store/auth';
 import { LoginPrompt } from '@/components/ui/LoginPrompt';
+import { useSeo } from '@/lib/seo';
 
 function Gate({ error }) {
   const code = error?.response?.data?.error?.code;
@@ -63,6 +64,9 @@ export default function TopicPage() {
   const topic = data?.topic;
   // Visitors (free topics only): no progress, bookmarks, notes or highlights — those belong to an account.
   const guest = !useAuthStore((s) => s.user);
+  // Locked topics show a login prompt to visitors (and search engines): keep those out of search results.
+  const loginWall = error?.response?.data?.error?.code === 'LOGIN_REQUIRED';
+  useSeo({ title: loginWall ? 'লগইন করে পড়ো' : topic && `${topic.title} — HSC ICT`, description: topic?.summary, noindex: loginWall });
   const readPct = useReadingTracker(guest ? undefined : topic?._id, articleRef);
   const chunks = useMemo(() => (topic ? buildNarration(topic.blocks, topic.title) : []), [topic]);
   const speech = useSpeech(chunks);
