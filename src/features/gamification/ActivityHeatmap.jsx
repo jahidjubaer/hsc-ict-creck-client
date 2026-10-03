@@ -40,8 +40,8 @@ export function ActivityHeatmap({ days, goal }) {
   return (
     <div>
       <div ref={scroller} className="overflow-x-auto pb-1">
-        <div className="flex w-max gap-[3px]">
-          <div className="mr-1 grid grid-rows-[14px_repeat(7,12px)] gap-[3px] text-[10px] leading-3 text-base-content/50">
+        <div className="flex w-max gap-[3px] lg:gap-1">
+          <div className="mr-1 grid grid-rows-[14px_repeat(7,12px)] gap-[3px] lg:grid-rows-[14px_repeat(7,16px)] lg:gap-1 text-[10px] leading-3 text-base-content/50">
             <span />
             {WEEKDAYS.map((w, i) => (
               <span key={w}>{i % 2 === 1 ? w : ''}</span>
@@ -51,7 +51,7 @@ export function ActivityHeatmap({ days, goal }) {
             const first = week.find(Boolean);
             const newMonth = first && (w === 0 || Number(first.day.slice(8)) <= 7);
             return (
-              <div key={w} className="grid grid-rows-[14px_repeat(7,12px)] gap-[3px]">
+              <div key={w} className="grid grid-rows-[14px_repeat(7,12px)] gap-[3px] lg:grid-rows-[14px_repeat(7,16px)] lg:gap-1">
                 {/* Absolutely placed so a long month name never widens its week column. */}
                 <span className="relative">
                   {newMonth && (
@@ -62,9 +62,9 @@ export function ActivityHeatmap({ days, goal }) {
                 </span>
                 {Array.from({ length: 7 }, (_, i) => {
                   const d = week[i];
-                  if (!d) return <span key={i} className="size-3" />;
+                  if (!d) return <span key={i} className="size-3 lg:size-4" />;
                   const text = `${label(d.day)}: ${toBn(d.minutes)} মিনিট${d.xp ? `, ${toBn(d.xp)} XP` : ''}`;
-                  return <span key={i} className={`size-3 rounded-[3px] ${SHADES[shade(d, goal)]}`} title={text} aria-label={text} />;
+                  return <span key={i} className={`size-3 rounded-[3px] lg:size-4 ${SHADES[shade(d, goal)]}`} title={text} aria-label={text} />;
                 })}
               </div>
             );

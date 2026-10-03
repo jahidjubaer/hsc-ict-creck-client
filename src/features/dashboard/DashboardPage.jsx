@@ -8,7 +8,7 @@ import { bnDate, toBn } from '@/lib/bn';
 import { useProgressSummary } from '@/features/learn/queries';
 import { BadgeIcon } from '@/components/ui/BadgeIcon';
 import { ActivityHeatmap } from '@/features/gamification/ActivityHeatmap';
-import { LevelCard, StreakCard } from '@/features/gamification/cards';
+import { LevelCard, StreakCard, Tile } from '@/features/gamification/cards';
 import { useActivity, useBadges, useLeaderboard } from '@/features/gamification/queries';
 import { TodayPlanCard } from '@/features/plan/TodayPlanCard';
 
@@ -60,33 +60,16 @@ function BadgesCard() {
 
 function RankCard() {
   const { data } = useLeaderboard({ period: 'week', scope: 'all' });
-  const rank = data?.me?.rank;
+  const me = data?.me;
   return (
-    <Link to="/leaderboard" className="card-soft flex items-center gap-3 p-4 transition hover:border-primary/40">
-      <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-amber-500/10 text-amber-500">
-        <Trophy className="size-5" />
-      </span>
-      <div className="min-w-0 flex-1">
-        <p className="text-xs text-base-content/60">এই সপ্তাহের লিডারবোর্ড</p>
-        <p className="text-lg font-bold">{rank ? `#${toBn(rank)}` : '—'}</p>
-      </div>
-      <span className="text-xs text-base-content/60">{data?.me?.score ? `${toBn(data.me.score)} XP` : ''}</span>
-    </Link>
-  );
-}
-
-function StatCard({ icon: Icon, label, value, tone, children }) {
-  return (
-    <div className="card-soft flex items-center gap-3 p-4">
-      <span className={`grid size-11 shrink-0 place-items-center rounded-xl ${tone}`}>
-        <Icon className="size-5" />
-      </span>
-      <div className="min-w-0 flex-1">
-        <p className="text-xs text-base-content/60">{label}</p>
-        <p className="text-lg font-bold">{value}</p>
-        {children}
-      </div>
-    </div>
+    <Tile
+      to="/leaderboard"
+      icon={Trophy}
+      tone="bg-amber-500/10 text-amber-500"
+      label="সাপ্তাহিক র‍্যাংক"
+      value={me?.rank ? `#${toBn(me.rank)}` : 'এখনো নেই'}
+      note={me?.score ? `এই সপ্তাহে ${toBn(me.score)} XP` : 'পড়ে বা কুইজ দিয়ে XP পেলেই র‍্যাংকে আসবে'}
+    />
   );
 }
 
@@ -160,15 +143,20 @@ export default function DashboardPage() {
         )}
       </section>
 
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StreakCard streak={user.streak} />
         <LevelCard xp={user.xp} levelInfo={user.levelInfo} />
-        <div className="grid gap-4 sm:col-span-2 sm:grid-cols-2 lg:col-span-1 lg:grid-cols-1">
-          <StatCard icon={Target} label="আজকের লক্ষ্য" value={`${toBn(todayMin)}/${toBn(goal)} মিনিট`} tone="text-success bg-success/10">
-            <progress className="progress progress-success mt-1 h-1.5" value={goalPct} max={100} />
-          </StatCard>
-          <RankCard />
-        </div>
+        <Tile
+          icon={Target}
+          tone="bg-success/10 text-success"
+          label="আজকের লক্ষ্য"
+          value={`${toBn(todayMin)}/${toBn(goal)} মিনিট`}
+          note={goalPct >= 100 ? 'আজকের লক্ষ্য পূরণ ✓' : `আর ${toBn(goal - todayMin)} মিনিট`}
+          noteTone={goalPct >= 100 ? 'text-success' : undefined}
+        >
+          <progress className="progress progress-success mt-2 h-1.5 w-full" value={goalPct} max={100} />
+        </Tile>
+        <RankCard />
       </section>
 
       <TodayPlanCard />
@@ -185,7 +173,27 @@ export default function DashboardPage() {
             </p>
           )}
         </div>
-        {activity ? <ActivityHeatmap days={activity.days} goal={activity.goalMinutes} /> : <div className="skeleton h-32" />}
+        {activity ? (
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
+            <div className="min-w-0 lg:flex-1">
+              <ActivityHeatmap days={activity.days} goal={activity.goalMinutes} />
+            </div>
+            <dl className="grid grid-cols-3 gap-2 text-center lg:w-56 lg:grid-cols-1 lg:text-left">
+              {[
+                ['পড়ার দিন', `${toBn(activity.totals.activeDays)} দিন`],
+                ['লক্ষ্য পূরণ', `${toBn(activity.days.filter((d) => d.minutes >= activity.goalMinutes).length)} দিন`],
+                ['সর্বোচ্চ স্ট্রিক', `${toBn(user.streak?.longest ?? 0)} দিন`],
+              ].map(([k, v]) => (
+                <div key={k} className="rounded-xl bg-base-200/60 px-3 py-2">
+                  <dt className="text-xs text-base-content/60">{k}</dt>
+                  <dd className="font-bold">{v}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        ) : (
+          <div className="skeleton h-32" />
+        )}
       </section>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
@@ -227,7 +235,14 @@ export default function DashboardPage() {
           <div className="card-soft p-5">
             <h2 className="font-bold">গত ৭ দিন (মিনিট)</h2>
             <div className="mt-3 h-40">
-              {chart && <WeekBars data={chart} />}
+              {chart &&
+                (chart.some((d) => d.minutes) ? (
+                  <WeekBars data={chart} />
+                ) : (
+                  <div className="grid h-full place-items-center rounded-xl border border-dashed border-base-300 p-4 text-center text-sm text-base-content/60">
+                    এই সপ্তাহে এখনো পড়া হয়নি — একটা টপিক পড়লেই এখানে প্রতিদিনের মিনিট দেখাবে।
+                  </div>
+                ))}
             </div>
           </div>
 
