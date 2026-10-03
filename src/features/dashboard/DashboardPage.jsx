@@ -11,6 +11,7 @@ import { ActivityHeatmap } from '@/features/gamification/ActivityHeatmap';
 import { LevelCard, StreakCard, Tile } from '@/features/gamification/cards';
 import { useActivity, useBadges, useLeaderboard } from '@/features/gamification/queries';
 import { TodayPlanCard } from '@/features/plan/TodayPlanCard';
+import { ProfileNudge } from '@/features/profile/ProfileNudge';
 
 function greeting() {
   const h = new Date().getHours();
@@ -142,6 +143,8 @@ export default function DashboardPage() {
           </>
         )}
       </section>
+
+      <ProfileNudge />
 
       <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StreakCard streak={user.streak} />

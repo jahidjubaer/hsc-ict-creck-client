@@ -218,3 +218,32 @@ code, pre, kbd, samp { font-variant-ligatures: none; }
     bottom: calc(3.9rem + env(safe-area-inset-bottom));
   }
 }
+
+/* Content protection (ContentGuard): visitors can't select; images can't be dragged or long-pressed;
+   the app blurs while shielded; printing shows a notice instead of the page. */
+html.guard-noselect body {
+  -webkit-user-select: none;
+  user-select: none;
+}
+html.guard-noselect :is(input, textarea, [contenteditable], .cm-editor, [data-allow-copy]) {
+  -webkit-user-select: text;
+  user-select: text;
+}
+html.content-guard img {
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
+}
+html.shielded .drawer {
+  filter: blur(18px);
+}
+@media print {
+  html.content-guard body > * {
+    display: none !important;
+  }
+  html.content-guard body::after {
+    content: 'ICT Crack — এই কনটেন্ট প্রিন্ট করা যাবে না।';
+    display: block;
+    padding: 2rem;
+    font-size: 1.25rem;
+  }
+}

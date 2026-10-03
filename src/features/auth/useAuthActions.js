@@ -24,6 +24,13 @@ export function useAuthActions() {
       queryClient.invalidateQueries();
       navigate(redirectTo, { replace: true, state: { welcome: true } });
     },
+    // 201 = a new account was made from the Google profile
+    async googleLogin(idToken, redirectTo = '/dashboard') {
+      const { data, status } = await api.post('/auth/google', { idToken });
+      setSession(data);
+      queryClient.invalidateQueries();
+      navigate(redirectTo, { replace: true, state: status === 201 ? { welcome: true } : undefined });
+    },
     async logout() {
       await api.post('/auth/logout').catch(() => {});
       clear();

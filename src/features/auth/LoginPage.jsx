@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { Eye, EyeOff, LogIn } from 'lucide-react';
 import { AuthShell, FieldError } from './AuthShell';
 import { useAuthActions } from './useAuthActions';
+import { GoogleButton } from './GoogleButton';
 import { errorMessage } from '@/lib/api';
 
 const schema = z.object({
@@ -37,6 +38,7 @@ export default function LoginPage() {
     <AuthShell title="আবার স্বাগতম 👋" subtitle="তোমার অ্যাকাউন্টে লগইন করো">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
         {serverError && <div className="alert alert-error alert-soft text-sm">{serverError}</div>}
+        <GoogleButton redirectTo={location.state?.from || '/dashboard'} onError={setServerError} />
         <label className="block">
           <span className="mb-1 block text-sm font-medium">ইমেইল</span>
           <input type="email" autoComplete="email" className="input w-full" placeholder="you@example.com" {...register('email')} />

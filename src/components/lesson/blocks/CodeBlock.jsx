@@ -1,26 +1,14 @@
-import { useState } from 'react';
 import { Highlight, themes } from 'prism-react-renderer';
-import { Check, Copy, Eye, TerminalSquare } from 'lucide-react';
+import { Eye, TerminalSquare } from 'lucide-react';
 
 const LANG_LABEL = { c: 'C', html: 'HTML', sql: 'SQL', css: 'CSS', text: 'Text' };
 
 /**
- * Highlighted code with copy button. Optional `output` (program output) and,
+ * Highlighted code (no copy button — lesson content is copy-protected). Optional `output` (program output) and,
  * for HTML, `preview` renders the page in a sandboxed iframe.
  */
 export function CodeBlock({ code, lang = 'text', title, output, preview }) {
-  const [copied, setCopied] = useState(false);
   const source = code.replace(/\n$/, '');
-
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(source);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    } catch {
-      /* clipboard blocked */
-    }
-  };
 
   return (
     <div className="overflow-hidden rounded-2xl border border-base-300 bg-[#1e1e2e] text-sm shadow-sm">
@@ -33,9 +21,6 @@ export function CodeBlock({ code, lang = 'text', title, output, preview }) {
           </span>
           <span className="ml-2 font-medium">{title || LANG_LABEL[lang] || lang}</span>
         </span>
-        <button type="button" onClick={copy} className="flex items-center gap-1 hover:text-white" aria-label="কোড কপি করো">
-          {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />} {copied ? 'কপি হয়েছে' : 'কপি'}
-        </button>
       </div>
       <Highlight code={source} language={lang === 'c' ? 'c' : lang === 'html' ? 'markup' : lang} theme={themes.vsDark}>
         {({ tokens, getLineProps, getTokenProps }) => (
