@@ -7,10 +7,11 @@ import {
   Crown,
   GraduationCap,
   History,
+  ListChecks,
   Lock,
   NotebookTabs,
+  PenLine,
   Play,
-  Timer,
   Trophy,
   UserCheck,
 } from 'lucide-react';
@@ -19,8 +20,14 @@ import { QueryError } from '@/components/ui/QueryError';
 import { bnDate, toBn } from '@/lib/bn';
 import { useExamOverview, useStartAttempt } from './queries';
 import { letterGrade } from './format';
+import { KIND_LABEL } from './kinds';
 
-const KIND_LABEL = { topic: 'টপিক কুইজ', chapter: 'অধ্যায় পরীক্ষা', full: 'মডেল টেস্ট' };
+/** 25 → "২৫ মিনিট", 150 → "২ ঘণ্টা ৩০ মিনিট" */
+const duration = (min) => {
+  const h = Math.floor(min / 60);
+  const m = min % 60;
+  return [h && `${toBn(h)} ঘণ্টা`, m && `${toBn(m)} মিনিট`].filter(Boolean).join(' ');
+};
 
 function ScorePill({ percent }) {
   if (percent === null || percent === undefined) return null;
@@ -65,7 +72,7 @@ export default function ExamsPage() {
       {!access && (
         <div className="alert alert-warning alert-soft">
           <Crown className="size-5" />
-          <span>অধ্যায় পরীক্ষা ও মডেল টেস্ট দিতে প্রিমিয়াম প্যাকেজ প্রয়োজন। ফ্রি টপিকের কুইজ সবার জন্য খোলা।</span>
+          <span>অধ্যায় পরীক্ষা ও মডেল টেস্ট দিতে প্রিমিয়াম প্যাকেজ প্রয়োজন। প্রতিটি অধ্যায়ের প্রথম (ফ্রি) টপিকের কুইজ সবার জন্য খোলা।</span>
           <Link to="/pricing" className="btn btn-sm btn-warning">
             প্যাকেজ দেখো
           </Link>
@@ -73,29 +80,44 @@ export default function ExamsPage() {
       )}
 
       <div className="grid gap-4 lg:grid-cols-3">
-        {/* Full-book model test */}
+        {/* Full-book model tests: MCQ and CQ separately, like the two board papers */}
         <section className="relative overflow-hidden rounded-box bg-gradient-to-br from-indigo-600 via-violet-600 to-fuchsia-600 p-6 text-white lg:col-span-2">
           <GraduationCap className="absolute -right-6 -bottom-8 size-44 opacity-15" />
-          <p className="text-sm opacity-90">পূর্ণাঙ্গ বই</p>
-          <h2 className="text-2xl font-bold">{templates.full.title}</h2>
-          <p className="mt-2 max-w-md text-sm opacity-90">
-            সব অধ্যায় থেকে বোর্ডের মতো {toBn(templates.full.mcq)}টি প্রশ্ন, {toBn(templates.full.timeLimitMin)} মিনিট। প্রতিবার নতুন প্রশ্নসেট।
-          </p>
-          <div className="relative mt-5 flex flex-wrap items-center gap-3">
-            <button
-              type="button"
-              className="btn border-none bg-white text-indigo-700 hover:bg-white/90"
-              disabled={!full.ready || !access || busy}
-              onClick={() => start.mutate({ kind: 'full' })}
-            >
-              <Play className="size-4" /> শুরু করো
-            </button>
-            {!full.ready && <span className="text-sm opacity-90">প্রশ্নব্যাংক তৈরি হচ্ছে ({toBn(full.mcqCount)}/{toBn(templates.full.mcq)})</span>}
-            {full.best !== null && (
-              <span className="badge border-none bg-white/20 text-white">
-                <Trophy className="size-3.5" /> সেরা {toBn(full.best)}%
-              </span>
-            )}
+          <p className="text-sm opacity-90">পূর্ণাঙ্গ বই · বোর্ডের প্যাটার্নে</p>
+          <h2 className="text-2xl font-bold">মডেল টেস্ট</h2>
+          <div className="relative mt-4 grid gap-3 sm:grid-cols-2">
+            {[
+              { kind: 'full', test: full.mcqTest, icon: ListChecks, label: 'MCQ মডেল টেস্ট', info: `${toBn(templates.full.mcq)}টি প্রশ্ন · ${duration(templates.full.timeLimitMin)}` },
+              {
+                kind: 'full-cq',
+                test: full.cqTest,
+                icon: PenLine,
+                label: 'সৃজনশীল মডেল টেস্ট',
+                info: `${toBn(templates['full-cq'].cq)}টি থেকে ${toBn(templates['full-cq'].cqChoose)}টি · ${duration(templates['full-cq'].timeLimitMin)}`,
+              },
+            ].map(({ kind, test, icon: Icon, label, info }) => (
+              <div key={kind} className="rounded-2xl bg-white/12 p-4 backdrop-blur-sm">
+                <p className="flex items-center gap-2 font-bold">
+                  <Icon className="size-5" /> {label}
+                </p>
+                <p className="mt-1 text-sm opacity-90">{info}</p>
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    className="btn btn-sm border-none bg-white text-indigo-700 hover:bg-white/90"
+                    disabled={!test.ready || !access || busy}
+                    onClick={() => start.mutate({ kind })}
+                  >
+                    <Play className="size-4" /> শুরু করো
+                  </button>
+                  {test.best !== null && (
+                    <span className="badge border-none bg-white/20 text-white">
+                      <Trophy className="size-3.5" /> সেরা {toBn(test.best)}%
+                    </span>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         </section>
 
@@ -113,19 +135,23 @@ export default function ExamsPage() {
         </Link>
       </div>
 
-      {/* Chapter tests */}
+      {/* Chapter tests: MCQ and CQ separately */}
       <section>
         <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
           <h2 className="text-lg font-bold">অধ্যায় পরীক্ষা</h2>
-          <p className="flex items-center gap-1 text-sm text-base-content/60">
-            <Timer className="size-4" /> {toBn(templates.chapter.mcq)} MCQ + {toBn(templates.chapter.cq)}টি থেকে {toBn(templates.chapter.cqChoose)}টি সৃজনশীল ·{' '}
-            {toBn(templates.chapter.timeLimitMin)} মিনিট
+          <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-base-content/60">
+            <span className="flex items-center gap-1">
+              <ListChecks className="size-4" /> MCQ: {toBn(templates['chapter-mcq'].mcq)}টি · {duration(templates['chapter-mcq'].timeLimitMin)}
+            </span>
+            <span className="flex items-center gap-1">
+              <PenLine className="size-4" /> সৃজনশীল: {toBn(templates['chapter-cq'].cq)}টি থেকে {toBn(templates['chapter-cq'].cqChoose)}টি ·{' '}
+              {duration(templates['chapter-cq'].timeLimitMin)}
+            </span>
           </p>
         </div>
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {chapters.map((c) => {
             const left = c.topicsPublished - c.topicsCompleted;
-            const can = access && c.ready && c.unlocked;
             return (
               <article key={c._id} className="card-soft flex flex-col p-5">
                 <div className="flex items-start gap-3">
@@ -137,29 +163,33 @@ export default function ExamsPage() {
                     <h3 className="line-clamp-2 leading-snug font-semibold">{c.title}</h3>
                   </div>
                 </div>
-                <div className="mt-3 flex flex-wrap gap-2 text-xs">
-                  <span className="badge badge-ghost badge-sm">{toBn(c.mcqCount)} MCQ</span>
-                  <span className="badge badge-ghost badge-sm">{toBn(c.cqCount)} সৃজনশীল</span>
-                  <ScorePill percent={c.best} />
-                </div>
                 <div className="mt-auto pt-4">
-                  {!c.ready ? (
-                    <button type="button" className="btn btn-sm btn-block" disabled>
-                      প্রশ্নব্যাংক তৈরি হচ্ছে
-                    </button>
-                  ) : !c.unlocked ? (
+                  {!c.unlocked ? (
                     <Link to={`/learn/${c.slug}`} className="btn btn-outline btn-sm btn-block">
                       <Lock className="size-4" /> আগে {toBn(left)}টি টপিক শেষ করো
                     </Link>
                   ) : (
-                    <button
-                      type="button"
-                      className="btn btn-primary btn-sm btn-block"
-                      disabled={!can || busy}
-                      onClick={() => start.mutate({ kind: 'chapter', chapterId: c._id })}
-                    >
-                      <Play className="size-4" /> {c.attempts ? 'আবার পরীক্ষা দাও' : 'পরীক্ষা শুরু করো'}
-                    </button>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        { kind: 'chapter-mcq', test: c.mcqTest, icon: ListChecks, label: 'MCQ', count: c.mcqCount },
+                        { kind: 'chapter-cq', test: c.cqTest, icon: PenLine, label: 'সৃজনশীল', count: c.cqCount },
+                      ].map(({ kind, test, icon: Icon, label, count }) => (
+                        <div key={kind} className="flex flex-col items-stretch gap-1.5">
+                          <button
+                            type="button"
+                            className={clsx('btn btn-sm', kind === 'chapter-mcq' ? 'btn-primary' : 'btn-secondary')}
+                            disabled={!access || !test.ready || busy}
+                            onClick={() => start.mutate({ kind, chapterId: c._id })}
+                            title={test.ready ? undefined : 'প্রশ্নব্যাংক তৈরি হচ্ছে'}
+                          >
+                            <Icon className="size-4" /> {label}
+                          </button>
+                          <span className="flex min-h-5 items-center justify-center gap-1 text-xs text-base-content/55">
+                            {test.best !== null ? <ScorePill percent={test.best} /> : `${toBn(count)}টি প্রশ্ন`}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
                   )}
                 </div>
               </article>

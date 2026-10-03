@@ -22,6 +22,7 @@ import { Explanation, McqOptions, McqStem } from './components/McqOptions';
 import { Stimulus } from './components/CqEditor';
 import { formatClock, letterGrade, partLabel } from './format';
 import { useSelfMark, useStartAttempt } from './queries';
+import { levelOf, retryBody } from './kinds';
 
 function Stat({ icon: Icon, label, value, hint }) {
   return (
@@ -157,7 +158,7 @@ function CqReview({ attemptId, question, index }) {
 
 export function ResultView({ attempt }) {
   const { score, justSubmitted, mcq, cq, breakdown } = attempt;
-  const [tab, setTab] = useState(cq.some((c) => c.grading === 'self') ? 'cq' : 'mcq');
+  const [tab, setTab] = useState(!mcq.length || cq.some((c) => c.grading === 'self') ? 'cq' : 'mcq');
   const [filter, setFilter] = useState('all');
   const start = useStartAttempt();
   const grade = letterGrade(score.percent);
@@ -166,18 +167,12 @@ export function ResultView({ attempt }) {
     if (justSubmitted && score.percent >= 80) confetti({ particleCount: 160, spread: 100, origin: { y: 0.6 } });
   }, [justSubmitted, score.percent]);
 
-  const retryBody =
-    attempt.kind === 'topic'
-      ? { kind: 'topic', topicId: attempt.topic?._id }
-      : attempt.kind === 'chapter'
-        ? { kind: 'chapter', chapterId: attempt.chapter?._id }
-        : { kind: 'full' };
 
   const wrong = mcq.filter((m) => !m.correct && m.picked !== null);
   const skipped = mcq.filter((m) => m.picked === null);
   const shown = filter === 'wrong' ? wrong : filter === 'skipped' ? skipped : mcq;
   const backLink =
-    attempt.kind === 'topic' && attempt.topic && attempt.chapter
+    levelOf(attempt.kind) === 'topic' && attempt.topic && attempt.chapter
       ? { to: `/learn/${attempt.chapter.slug}/${attempt.topic.slug}`, label: 'টপিকে ফিরে যাও' }
       : { to: '/exams', label: 'পরীক্ষা কেন্দ্র' };
 
@@ -205,7 +200,9 @@ export function ResultView({ attempt }) {
               </span>
             </div>
             <div className="grid flex-1 grid-cols-2 gap-2 sm:grid-cols-4">
-              <Stat icon={Target} label="বহুনির্বাচনি" value={`${toBn(score.mcq)}/${toBn(score.mcqTotal)}`} hint={`ভুল ${toBn(wrong.length)} · বাদ ${toBn(skipped.length)}`} />
+              {score.mcqTotal > 0 && (
+                <Stat icon={Target} label="বহুনির্বাচনি" value={`${toBn(score.mcq)}/${toBn(score.mcqTotal)}`} hint={`ভুল ${toBn(wrong.length)} · বাদ ${toBn(skipped.length)}`} />
+              )}
               {score.cqTotal > 0 && (
                 <Stat icon={PenLine} label="সৃজনশীল" value={`${toBn(score.cq)}/${toBn(score.cqTotal)}`} hint={score.cqPending ? 'নিজে নম্বর দেওয়া বাকি' : undefined} />
               )}
@@ -220,7 +217,7 @@ export function ResultView({ attempt }) {
           </div>
         </div>
         <div className="flex flex-wrap gap-2 border-t border-base-300 p-4">
-          <button type="button" className="btn btn-primary btn-sm" onClick={() => start.mutate(retryBody)} disabled={start.isPending}>
+          <button type="button" className="btn btn-primary btn-sm" onClick={() => start.mutate(retryBody(attempt))} disabled={start.isPending}>
             <RotateCcw className="size-4" /> আবার দাও
           </button>
           {wrong.length > 0 && (
@@ -271,7 +268,7 @@ export function ResultView({ attempt }) {
       )}
 
       {/* Review */}
-      <div role="tablist" className="tabs-box tabs w-fit">
+      <div role="tablist" className={clsx('tabs-box tabs w-fit', !(mcq.length && cq.length) && 'hidden')}>
         <button type="button" role="tab" className={clsx('tab', tab === 'mcq' && 'tab-active')} onClick={() => setTab('mcq')}>
           বহুনির্বাচনি ({toBn(mcq.length)})
         </button>

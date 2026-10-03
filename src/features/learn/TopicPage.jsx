@@ -14,6 +14,7 @@ import {
   ListChecks,
   NotebookPen,
   PartyPopper,
+  PenLine,
 } from 'lucide-react';
 import { BlockRenderer } from '@/components/lesson/BlockRenderer';
 import { AudioBar } from '@/components/lesson/AudioBar';
@@ -61,7 +62,9 @@ export default function TopicPage() {
   const complete = useCompleteTopic();
   const update = useUpdateProgress(topic?._id);
   const startQuiz = useStartAttempt();
-  const bestQuiz = data?.progress?.bestQuizScore;
+  // MCQ quiz and CQ practice are separate tests (older cached responses have no `tests`)
+  const tests = data?.tests ?? { mcq: { count: 1, best: data?.progress?.bestQuizScore ?? null }, cq: { count: 0, best: null } };
+  const busyKind = startQuiz.isPending ? startQuiz.variables?.kind : null;
 
   // Optimistic bookmark state, scoped to the topic it was set on.
   const [bookmarkOverride, setBookmarkOverride] = useState({ id: null, value: false });
@@ -194,18 +197,31 @@ export default function TopicPage() {
               <>
                 <PartyPopper className="mx-auto size-10 text-primary" />
                 <h2 className="mt-3 text-xl font-bold">টপিক সম্পন্ন! এবার নিজেকে যাচাই করো</h2>
-                <p className="mt-1 text-sm text-base-content/60">টপিক কুইজে MCQ ও সৃজনশীল প্রশ্নের উত্তর দিয়ে শেখাটা পাকা করো।</p>
-                {typeof bestQuiz === 'number' && <p className="mt-2 text-sm font-semibold text-success">কুইজে তোমার সেরা স্কোর: {toBn(bestQuiz)}%</p>}
-                <div className="mt-5 flex flex-wrap justify-center gap-2">
-                  <button
-                    type="button"
-                    className="btn btn-primary"
-                    disabled={startQuiz.isPending}
-                    onClick={() => startQuiz.mutate({ kind: 'topic', topicId: topic._id })}
-                  >
-                    {startQuiz.isPending ? <span className="loading loading-spinner loading-sm" /> : <ListChecks className="size-4" />}
-                    {typeof bestQuiz === 'number' ? 'আবার কুইজ দাও' : 'টপিক কুইজ দাও'}
-                  </button>
+                <p className="mt-1 text-sm text-base-content/60">MCQ কুইজে তাৎক্ষণিক উত্তর দেখো, সৃজনশীল অনুশীলনে লিখে মূল্যায়ন নাও।</p>
+                <div className="mx-auto mt-5 grid max-w-md gap-3 sm:grid-cols-2">
+                  {[
+                    { kind: 'topic', test: tests.mcq, icon: ListChecks, label: 'MCQ কুইজ', hint: '১০টি প্রশ্ন · সাথে সাথে উত্তর', cls: 'btn-primary' },
+                    { kind: 'topic-cq', test: tests.cq, icon: PenLine, label: 'সৃজনশীল অনুশীলন', hint: '১টি প্রশ্ন · ক, খ, গ, ঘ', cls: 'btn-secondary' },
+                  ]
+                    .filter((x) => x.test.count > 0)
+                    .map(({ kind, test, icon: Icon, label, hint, cls }) => (
+                      <div key={kind} className="rounded-2xl border border-base-300 p-3">
+                        <button
+                          type="button"
+                          className={`btn ${cls} btn-block`}
+                          disabled={startQuiz.isPending}
+                          onClick={() => startQuiz.mutate({ kind, topicId: topic._id })}
+                        >
+                          {busyKind === kind ? <span className="loading loading-spinner loading-sm" /> : <Icon className="size-4" />}
+                          {label}
+                        </button>
+                        <p className="mt-2 text-xs text-base-content/60">
+                          {typeof test.best === 'number' ? <span className="font-semibold text-success">সেরা স্কোর {toBn(test.best)}%</span> : hint}
+                        </p>
+                      </div>
+                    ))}
+                </div>
+                <div className="mt-4 flex flex-wrap justify-center gap-2">
                   {next?.published && (
                     <Link to={`/learn/${chapter.slug}/${next.slug}`} className="btn btn-outline">
                       পরের টপিক <ArrowRight className="size-4" />
@@ -216,7 +232,7 @@ export default function TopicPage() {
             ) : (
               <>
                 <h2 className="text-xl font-bold">পড়া শেষ?</h2>
-                <p className="mt-1 text-sm text-base-content/60">সম্পন্ন চিহ্নিত করলে পাবে +২০ XP এবং টপিক কুইজ আনলক হবে।</p>
+                <p className="mt-1 text-sm text-base-content/60">সম্পন্ন চিহ্নিত করলে পাবে +২০ XP এবং MCQ কুইজ ও সৃজনশীল অনুশীলন আনলক হবে।</p>
                 <button type="button" className="btn btn-primary btn-wide mt-5" onClick={markComplete} disabled={complete.isPending}>
                   {complete.isPending ? <span className="loading loading-spinner loading-sm" /> : <CheckCircle2 className="size-5" />}
                   পড়া শেষ

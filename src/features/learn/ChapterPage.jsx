@@ -163,16 +163,28 @@ export default function ChapterPage() {
             <h2 className="flex items-center gap-2 font-bold">
               <ClipboardList className="size-5 text-primary" /> অধ্যায় পরীক্ষা
             </h2>
-            <p className="mt-2 text-sm text-base-content/70">সব টপিক শেষ হলে বোর্ড প্রশ্নের আদলে পূর্ণাঙ্গ অধ্যায় পরীক্ষা দিতে পারবে।</p>
+            <p className="mt-2 text-sm text-base-content/70">
+              সব টপিক শেষ হলে বোর্ডের আদলে আলাদা দুটি পরীক্ষা: MCQ (২৫টি, ২৫ মিনিট) ও সৃজনশীল (৩টি থেকে ২টি, ৫০ মিনিট)।
+            </p>
             {published.length > 0 && done >= published.length ? (
-              <button
-                type="button"
-                className="btn btn-primary btn-sm mt-3 w-full"
-                disabled={startTest.isPending}
-                onClick={() => startTest.mutate({ kind: 'chapter', chapterId: chapter._id })}
-              >
-                <Play className="size-4" /> পরীক্ষা শুরু করো
-              </button>
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  className="btn btn-primary btn-sm"
+                  disabled={startTest.isPending}
+                  onClick={() => startTest.mutate({ kind: 'chapter-mcq', chapterId: chapter._id })}
+                >
+                  <Play className="size-4" /> MCQ
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  disabled={startTest.isPending}
+                  onClick={() => startTest.mutate({ kind: 'chapter-cq', chapterId: chapter._id })}
+                >
+                  <Play className="size-4" /> সৃজনশীল
+                </button>
+              </div>
             ) : (
               <button type="button" className="btn btn-outline btn-sm mt-3 w-full" disabled>
                 <Lock className="size-4" /> {toBn(published.length - done)}টি টপিক বাকি

@@ -1,6 +1,6 @@
 import { Link } from 'react-router';
 import clsx from 'clsx';
-import { BookOpen, CheckCircle2, Circle, ClipboardList, FileCheck2, NotebookTabs, PlayCircle, RotateCcw, Trophy } from 'lucide-react';
+import { BookOpen, CheckCircle2, Circle, ClipboardList, FileCheck2, NotebookTabs, PenLine, PlayCircle, RotateCcw, Trophy } from 'lucide-react';
 import { toBn } from '@/lib/bn';
 import { useStartAttempt } from '@/features/exam/queries';
 import { usePlanAction } from './queries';
@@ -8,7 +8,8 @@ import { usePlanAction } from './queries';
 const KIND = {
   read: { icon: BookOpen, label: 'পড়া', tone: 'text-primary bg-primary/10' },
   quiz: { icon: ClipboardList, label: 'কুইজ', tone: 'text-secondary bg-secondary/10' },
-  'chapter-test': { icon: FileCheck2, label: 'অধ্যায় পরীক্ষা', tone: 'text-accent-content bg-accent/20' },
+  'chapter-test': { icon: FileCheck2, label: 'অধ্যায় MCQ পরীক্ষা', tone: 'text-accent-content bg-accent/20' },
+  'chapter-cq': { icon: PenLine, label: 'অধ্যায় সৃজনশীল পরীক্ষা', tone: 'text-secondary bg-secondary/10' },
   'model-test': { icon: Trophy, label: 'মডেল টেস্ট', tone: 'text-amber-600 bg-amber-500/10' },
   revise: { icon: RotateCcw, label: 'রিভিশন', tone: 'text-info bg-info/10' },
   mistakes: { icon: NotebookTabs, label: 'ভুলের খাতা', tone: 'text-error bg-error/10' },
@@ -24,7 +25,9 @@ function useTaskAction(task) {
     case 'quiz':
       return { onClick: () => start.mutate({ kind: 'topic', topicId: task.topic }), busy: start.isPending };
     case 'chapter-test':
-      return { onClick: () => start.mutate({ kind: 'chapter', chapterId: task.chapter }), busy: start.isPending };
+      return { onClick: () => start.mutate({ kind: 'chapter-mcq', chapterId: task.chapter }), busy: start.isPending };
+    case 'chapter-cq':
+      return { onClick: () => start.mutate({ kind: 'chapter-cq', chapterId: task.chapter }), busy: start.isPending };
     case 'model-test':
       return { onClick: () => start.mutate({ kind: 'full' }), busy: start.isPending };
     case 'mistakes':
@@ -80,7 +83,7 @@ export function TaskItem({ task, actionable = true }) {
         <p className={clsx('text-sm font-medium', task.done && 'line-through')}>{task.title}</p>
         <p className="text-xs text-base-content/55">
           {k.label}
-          {task.chapterNumber && task.kind !== 'chapter-test' ? ` · অধ্যায় ${toBn(task.chapterNumber)}` : ''} · {toBn(task.minutes)} মিনিট
+          {task.chapterNumber && !['chapter-test', 'chapter-cq'].includes(task.kind) ? ` · অধ্যায় ${toBn(task.chapterNumber)}` : ''} · {toBn(task.minutes)} মিনিট
         </p>
       </div>
       {go}

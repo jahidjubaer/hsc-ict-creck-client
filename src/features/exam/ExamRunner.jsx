@@ -13,14 +13,17 @@ import { useDraft } from './useDraft';
 
 const hasText = (texts) => texts?.some((t) => t.trim());
 
-/** Board-style timed test: all MCQs on one page with a question palette, CQ tabs, autosave, auto-submit at time-up. */
+/**
+ * Board-style timed test: all MCQs on one page with a question palette, CQ tabs, autosave, auto-submit at time-up.
+ * Works for MCQ-only, CQ-only and (older) mixed tests.
+ */
 export function ExamRunner({ attempt }) {
   const { mcq, cq, cqChoose } = attempt;
   // Server time minus device time at load, so the countdown follows the server deadline.
   const [skewMs] = useState(() => new Date(attempt.serverNow).getTime() - Date.now());
   const { draft, setMcq, setCq, flush, savedAt, markClean } = useDraft(attempt);
   const submit = useSubmitAttempt(attempt._id);
-  const [section, setSection] = useState('mcq');
+  const [section, setSection] = useState(mcq.length ? 'mcq' : 'cq');
   const [cqTab, setCqTab] = useState(0);
   const confirmRef = useRef(null);
 
@@ -91,7 +94,7 @@ export function ExamRunner({ attempt }) {
             <Send className="size-4" /> জমা দাও
           </button>
         </div>
-        {cq.length > 0 && (
+        {mcq.length > 0 && cq.length > 0 && (
           <div role="tablist" className="tabs-box tabs tabs-sm mt-3 w-fit">
             <button type="button" role="tab" className={clsx('tab gap-1', section === 'mcq' && 'tab-active')} onClick={() => setSection('mcq')}>
               <ListChecks className="size-4" /> বহুনির্বাচনি ({toBn(answeredMcq)}/{toBn(mcq.length)})
@@ -137,11 +140,15 @@ export function ExamRunner({ attempt }) {
       {section === 'cq' && (
         <div className="mx-auto max-w-3xl space-y-4">
           <div className="alert alert-info alert-soft text-sm">
-            <span>
-              {toBn(cq.length)}টি প্রশ্ন থেকে <b>যেকোনো {toBn(cqChoose)}টির</b> উত্তর দাও। বেশি লিখলে প্রথম {toBn(cqChoose)}টি মূল্যায়িত হবে।
-            </span>
+            {cq.length > cqChoose ? (
+              <span>
+                {toBn(cq.length)}টি প্রশ্ন থেকে <b>যেকোনো {toBn(cqChoose)}টির</b> উত্তর দাও। বেশি লিখলে প্রথম {toBn(cqChoose)}টি মূল্যায়িত হবে।
+              </span>
+            ) : (
+              <span>উদ্দীপকটি পড়ে ক, খ, গ, ঘ — চারটি অংশেরই উত্তর লেখো।</span>
+            )}
           </div>
-          <div role="tablist" className="tabs-border tabs">
+          <div role="tablist" className={clsx('tabs-border tabs', cq.length < 2 && 'hidden')}>
             {cq.map((c, i) => (
               <button key={c._id} type="button" role="tab" className={clsx('tab gap-1', cqTab === i && 'tab-active')} onClick={() => setCqTab(i)}>
                 প্রশ্ন {toBn(i + 1)} {hasText(draft.cq[c._id]) && <CheckCircle2 className="size-4 text-success" />}
@@ -160,9 +167,11 @@ export function ExamRunner({ attempt }) {
         <div className="modal-box">
           <h3 className="text-lg font-bold">উত্তর জমা দেবে?</h3>
           <ul className="mt-3 space-y-1 text-sm">
-            <li>
-              বহুনির্বাচনি: {toBn(answeredMcq)}/{toBn(mcq.length)}টি উত্তর দেওয়া
-            </li>
+            {mcq.length > 0 && (
+              <li>
+                বহুনির্বাচনি: {toBn(answeredMcq)}/{toBn(mcq.length)}টি উত্তর দেওয়া
+              </li>
+            )}
             {cq.length > 0 && (
               <li>
                 সৃজনশীল: {toBn(answeredCq)}/{toBn(cqChoose)}টি লেখা
