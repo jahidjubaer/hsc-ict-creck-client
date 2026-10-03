@@ -5,6 +5,7 @@ import { router } from './router';
 import { AuthBootstrap } from '@/features/auth/AuthBootstrap';
 import { queryClient } from '@/lib/queryClient';
 import { installGamificationHooks } from '@/features/gamification/celebrate';
+import { PwaStatus } from '@/components/pwa/PwaStatus';
 
 installGamificationHooks();
 
@@ -14,6 +15,7 @@ export function AppProviders() {
       <AuthBootstrap>
         <RouterProvider router={router} />
       </AuthBootstrap>
+      <PwaStatus />
       <Toaster
         position="top-center"
         toastOptions={{ className: '!rounded-xl !font-sans !bg-base-100 !text-base-content !shadow-lg' }}

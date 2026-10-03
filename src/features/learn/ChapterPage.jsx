@@ -20,6 +20,7 @@ import { QueryError } from '@/components/ui/QueryError';
 import { toBn } from '@/lib/bn';
 import { useChapter } from './queries';
 import { useStartAttempt } from '@/features/exam/queries';
+import { OfflineSave } from './OfflineSave';
 
 function TopicStatusIcon({ topic }) {
   if (!topic.published) return <Hourglass className="size-5 text-base-content/30" />;
@@ -178,6 +179,7 @@ export default function ChapterPage() {
               </button>
             )}
           </div>
+          <OfflineSave chapterSlug={chapterSlug} topics={topics} />
         </aside>
       </div>
     </div>

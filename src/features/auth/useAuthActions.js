@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router';
 import { useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import { useAuthStore } from '@/store/auth';
+import { forgetOfflineData } from '@/lib/offline';
 
 export function useAuthActions() {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ export function useAuthActions() {
       await api.post('/auth/logout').catch(() => {});
       clear();
       queryClient.clear();
+      await forgetOfflineData();
       navigate('/', { replace: true });
     },
   };

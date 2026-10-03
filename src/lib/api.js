@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useAuthStore } from '@/store/auth';
+import { isNetworkError } from '@/lib/offline';
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '/api',
@@ -35,14 +36,16 @@ api.interceptors.response.use(
   async (error) => {
     const original = error.config;
     const code = error.response?.data?.error?.code;
-    if (error.response?.status === 401 && code === 'TOKEN_EXPIRED' && !original._retry) {
+    // Expired token, or signed in offline (no token yet) and the network is back: refresh once and retry.
+    const canRefresh = code === 'TOKEN_EXPIRED' || useAuthStore.getState().offline;
+    if (error.response?.status === 401 && canRefresh && !original._retry) {
       original._retry = true;
       try {
         const token = await refreshSession();
         original.headers.Authorization = `Bearer ${token}`;
         return api(original);
-      } catch {
-        useAuthStore.getState().clear();
+      } catch (err) {
+        if (!isNetworkError(err)) useAuthStore.getState().clear();
       }
     }
     return Promise.reject(error);

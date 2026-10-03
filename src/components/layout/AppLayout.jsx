@@ -21,6 +21,7 @@ import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { useAuthStore } from '@/store/auth';
 import { useAuthActions } from '@/features/auth/useAuthActions';
 import { AccessBanner } from './AccessBanner';
+import { InstallButton } from '@/components/pwa/InstallButton';
 import { toBn } from '@/lib/bn';
 
 const NAV = [
@@ -92,6 +93,7 @@ export function AppLayout() {
                       <User className="size-4" /> প্রোফাইল
                     </Link>
                   </li>
+                  <InstallButton menuItem />
                   <li>
                     <button onClick={logout}>
                       <LogOut className="size-4" /> লগআউট
