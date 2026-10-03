@@ -40,13 +40,17 @@ export function PublicLayout() {
           <ul className="hidden items-center gap-1 md:flex">
             {NAV.map((n) => (
               <li key={n.to}>
-                {/* Section links (/#…) are never "active"; only real pages get the active colour. */}
-                <NavLink
-                  to={n.to}
-                  className={({ isActive }) => clsx('btn btn-ghost btn-sm font-medium', isActive && !n.to.includes('#') && 'text-primary')}
-                >
-                  {n.label}
-                </NavLink>
+                {/* Section links (/#…) are plain links: NavLink ignores the hash, so on the home page it would mark them as the
+                    current page (aria-current), which daisyUI paints as a pressed button. */}
+                {n.to.includes('#') ? (
+                  <Link to={n.to} className="btn btn-ghost btn-sm font-medium">
+                    {n.label}
+                  </Link>
+                ) : (
+                  <NavLink to={n.to} className={({ isActive }) => clsx('btn btn-ghost btn-sm font-medium', isActive && 'text-primary')}>
+                    {n.label}
+                  </NavLink>
+                )}
               </li>
             ))}
           </ul>

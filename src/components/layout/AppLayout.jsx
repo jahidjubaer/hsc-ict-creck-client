@@ -159,7 +159,7 @@ export function AppLayout() {
                   </NavLink>
                 </li>
               )}
-              <li className="mt-2 border-t border-base-300 pt-2" />
+              <li className="menu-title mt-3 border-t border-base-300 px-2 pt-4 pb-1 text-xs">ওয়েবসাইট</li>
               {SITE.map(({ to, label, icon: Icon }) => (
                 <li key={to}>
                   <NavLink to={to} end className={navClass}>
