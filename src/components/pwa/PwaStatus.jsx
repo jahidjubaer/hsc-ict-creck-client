@@ -51,7 +51,7 @@ export function PwaStatus() {
 
   if (online) return null;
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50 flex items-center justify-center gap-2 bg-neutral px-3 py-1.5 text-center text-sm text-neutral-content">
+    <div className="offline-bar fixed inset-x-0 bottom-0 z-50 flex items-center justify-center gap-2 bg-neutral px-3 py-1.5 text-center text-sm text-neutral-content">
       <WifiOff className="size-4 shrink-0" /> ইন্টারনেট নেই — আগে খোলা বা সেভ করা পাঠ পড়া যাবে
     </div>
   );

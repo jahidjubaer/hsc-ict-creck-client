@@ -211,3 +211,10 @@ code, pre, kbd, samp { font-variant-ligatures: none; }
     animation: none;
   }
 }
+
+/* Offline bar sits above the mobile tab bar (BottomNav sets .has-tabbar on <html>). */
+@media (width < 64rem) {
+  .has-tabbar .offline-bar {
+    bottom: calc(3.9rem + env(safe-area-inset-bottom));
+  }
+}

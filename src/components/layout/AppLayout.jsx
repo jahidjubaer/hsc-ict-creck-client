@@ -8,7 +8,6 @@ import {
   LayoutDashboard,
   LogOut,
   Medal,
-  Menu,
   ScrollText,
   ShieldCheck,
   Trophy,
@@ -22,6 +21,7 @@ import { useAuthStore } from '@/store/auth';
 import { useAuthActions } from '@/features/auth/useAuthActions';
 import { AccessBanner } from './AccessBanner';
 import { InstallButton } from '@/components/pwa/InstallButton';
+import { BottomNav } from './BottomNav';
 import { toBn } from '@/lib/bn';
 
 const NAV = [
@@ -54,10 +54,7 @@ export function AppLayout() {
       <div className="drawer-content flex min-h-dvh flex-col">
         <header className="sticky top-0 z-30 border-b border-base-300/60 bg-base-100/85 backdrop-blur-lg">
           <div className="flex h-16 items-center gap-2 px-3 sm:px-6">
-            <label htmlFor={DRAWER_ID} className="btn btn-ghost btn-circle lg:hidden" aria-label="মেনু খোলো">
-              <Menu className="size-5" />
-            </label>
-            <Logo to="/dashboard" className="lg:hidden" />
+            <Logo to="/dashboard" className="ml-1 lg:hidden" />
             <div className="ml-auto flex items-center gap-1 sm:gap-2">
               <div
                 className="tooltip tooltip-bottom"
@@ -107,9 +104,10 @@ export function AppLayout() {
 
         <AccessBanner />
 
-        <main className="mx-auto w-full max-w-6xl flex-1 px-3 py-6 sm:px-6">
+        <main className="mx-auto w-full max-w-6xl flex-1 px-3 pt-6 pb-28 sm:px-6 lg:pb-6">
           <Outlet />
         </main>
+        <BottomNav />
       </div>
 
       <aside className="drawer-side z-40">
